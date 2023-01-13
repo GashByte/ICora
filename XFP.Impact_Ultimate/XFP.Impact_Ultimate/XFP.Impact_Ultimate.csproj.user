@@ -20,9 +20,6 @@
     <Compile Update="Controls\AkebiPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Base\AccountSaver.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="Controls\HomePage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -35,9 +32,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Controls\AkebiPage.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Controls\Base\AccountSaver.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Controls\HomePage.xaml">

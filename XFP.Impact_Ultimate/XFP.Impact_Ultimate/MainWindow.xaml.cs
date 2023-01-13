@@ -259,7 +259,7 @@ namespace XFP.Impact_Ultimate
                     #endregion
                     default:
                         ControlPanel.Content = new HomePage();
-                        Growl.Error("暂未开发\n请期待下个版本");
+                        Growl.Warning("暂未开发\n请期待下个版本");
                         break;
                 }
             }
