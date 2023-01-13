@@ -5,11 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using XFP.Impact_Ultimate.Utlis.Log;
 
 namespace XFP.Impact_Ultimate.ICoraException
 {
     public class IncompleteFile
     {
+        LogWriter log = new();
+
         /// <summary>
         /// Incomplete file
         /// </summary>
@@ -17,6 +20,7 @@ namespace XFP.Impact_Ultimate.ICoraException
         public void FileIsNotComplete(string FileName)
         {
             Growl.Error("Throw Exception: File Is Not Found\n File Name:" + FileName);
+            log.ErrorLog("Throw Exception: File Is Not Found\n File Name:" + FileName, -10);
         }
 
         /// <summary>
@@ -26,6 +30,7 @@ namespace XFP.Impact_Ultimate.ICoraException
         public void FileNotFound(string TargetFile)
         {
             Growl.Error("Throw Exception: Target File Not Found\n Target File Name:" + TargetFile);
+            log.ErrorLog("Throw Exception: Target File Not Found\n Target File Name:" + TargetFile, -10);
         }
 
         /// <summary>
@@ -37,8 +42,12 @@ namespace XFP.Impact_Ultimate.ICoraException
         public void FileNotFound(string TargetFile, bool CreateTargetFile)
         {
             Growl.Warning("Throw Exception: Target File Not Found\n Target File Name:" + TargetFile);
+            log.ErrorLog("Throw Exception: Target File Not Found\n Target File Name:" + TargetFile, -10);
             if (CreateTargetFile == true)
+            {
                 File.Create(TargetFile);
+                log.TempLog("Create File" + TargetFile);
+            }
         }
     }
 }
