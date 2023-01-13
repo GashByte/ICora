@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using Windows.Devices.HumanInterfaceDevice;
 using XFP.Impact_Ultimate.Controls.Game.Utils;
 using XFP.Impact_Ultimate.Model;
 using XFP.Impact_Ultimate.Utils;
@@ -96,6 +97,11 @@ namespace XFP.Impact_Ultimate.Controls
                     UIsFullScreen.Content = "启用";
 
                 if (key.gk("Border less") == "True")
+                    UBorderless.Content = "已启用";
+                else
+                    UBorderless.Content = "启用";
+
+                if (key.gk("Check CLibrary") == "True")
                     UBorderless.Content = "已启用";
                 else
                     UBorderless.Content = "启用";
@@ -203,6 +209,11 @@ namespace XFP.Impact_Ultimate.Controls
             {
                 if (File.Exists(CLPath))
                 {
+                    if (CheckCL.Content == "启用")
+                    {
+                        StartGame();
+                        return;
+                    }
                     // CL大小校验
                     FileInfo fileInfo = new FileInfo(CLPath);
                     long localsize = fileInfo.Length;
@@ -535,6 +546,21 @@ namespace XFP.Impact_Ultimate.Controls
             }
         }
 
+        private bool _UCheckCL;
+        private void CheckCL_Click(object sender, RoutedEventArgs e)
+        {
+            if (_UCheckCL == false)
+            {
+                CheckCL.Content = "启用";
+                key.sk("Check CLibrary", "False");
+            }
+            else
+            {
+                CheckCL.Content = "已启用";
+                key.sk("Check CLibrary", "True");
+            }
+        }
+
         #endregion
 
         /// <summary>
@@ -558,6 +584,7 @@ namespace XFP.Impact_Ultimate.Controls
                             + Environment.CurrentDirectory + "\\GenshinService文件夹 \n已经为您打开");
                         Directory.CreateDirectory(GenshinServiceDir);
                         Process.Start("explorer.exe", Environment.CurrentDirectory + "\\GenshinService");
+                        return;
                     }
                     #region 写入配置
                     DirectoryInfo info = new DirectoryInfo(UGenshinImpactPath.Text);
@@ -565,45 +592,50 @@ namespace XFP.Impact_Ultimate.Controls
                     string configPath = YuanShenDir + "\\config.ini";
                     if (UChooseService.SelectedItem == "官方服 | 天空岛")
                     {
-                        Growl.Info("正在切换 [官方服 | 天空岛] 请不要关闭 若出现卡顿 是正常状况");
-                        if (UGameService.Text == "当前服务器：国际服 | Global")
+                        if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
+                            , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
                         {
-                            Growl.Warning("为了保证用户等待时间不会过长 ICora不会对文件完整性进行判断\n若出现打不开游戏 请前往群中重新下载转服包");
-                            GameConverter game = new();
-                            game.Converter();
-                        }
+                            if (UGameService.Text == "当前服务器：国际服 | Global")
+                            {
+                                GameConverter game = new();
+                                game.Converter();
+                            }
 
-                        UGenshinImpactPath.Text = YuanShenDir + "\\YuanShen.exe";
-                        ini.INIWrite("General", "channel", "1", configPath);
-                        ini.INIWrite("General", "cps", "mihoyo", configPath);
+                            UGenshinImpactPath.Text = YuanShenDir + "\\YuanShen.exe";
+                            ini.INIWrite("General", "channel", "1", configPath);
+                            ini.INIWrite("General", "cps", "mihoyo", configPath);
+                        }
                     }
                     if (UChooseService.SelectedItem == "国际服 | Global")
                     {
-                        Growl.Info("正在切换 [国际服 | Global] 请不要关闭 若出现卡顿 是正常状况");
-                        Growl.Warning("为了保证用户等待时间不会过长 ICora不会对文件完整性进行判断\n若出现打不开游戏 请前往群中重新下载转服包");
+                        if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
+                            , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
+                        {
+                            GameConverter game = new();
+                            game.Converter();
 
-                        GameConverter game = new();
-                        game.Converter();
-
-                        ini.INIWrite("General", "channel", "1", configPath);
-                        ini.INIWrite("General", "cps", "mihoyo", configPath);
-                        UGenshinImpactPath.Text = YuanShenDir + "\\GenshinImpact.exe";
+                            ini.INIWrite("General", "channel", "1", configPath);
+                            ini.INIWrite("General", "cps", "mihoyo", configPath);
+                            UGenshinImpactPath.Text = YuanShenDir + "\\GenshinImpact.exe";
+                        }
                     }
                     if (UChooseService.SelectedItem == "渠道服 | 世界树")
                     {
-                        Growl.Info("正在切换 [渠道服 | 世界树] 请不要关闭 若出现卡顿 是正常状况");
-                        ini.INIWrite("General", "channel", "14", configPath);
-                        ini.INIWrite("General", "cps", "bilibili", configPath);
-                        UGenshinImpactPath.Text = YuanShenDir + "\\YuanShen.exe";
-                        if (UGameService.Text == "当前服务器：国际服 | Global")
+                        if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
+                            , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
                         {
-                            Growl.Warning("为了保证用户等待时间不会过长 ICora不会对文件完整性进行判断\n若出现打不开游戏 请前往群中重新下载转服包");
-                            GameConverter game = new();
-                            game.Converter();
+                            ini.INIWrite("General", "channel", "14", configPath);
+                            ini.INIWrite("General", "cps", "bilibili", configPath);
+                            UGenshinImpactPath.Text = YuanShenDir + "\\YuanShen.exe";
+                            if (UGameService.Text == "当前服务器：国际服 | Global")
+                            {
+                                GameConverter game = new();
+                                game.Converter();
+                            }
+                            Growl.Success("转服成功 当前服务器：渠道服 | 世界树\n若出现无法进入 还是官方服的问题 请反馈");
                         }
                     }
                     UGameService.Text = "当前服务器：" + UChooseService.SelectedItem;
-                    Growl.Success("切换成功！服务器：" + UChooseService.SelectedItem);
                     #endregion
                 }
                 catch (DirectoryNotFoundException)

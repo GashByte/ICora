@@ -10,6 +10,7 @@ using XFP.Impact_Ultimate.Utlis;
 using XFP.Impact_Ultimate.Utlis.Log;
 using XFP.Impact_Ultimate.Utlis.Model;
 using XFP.Impact_Ultimate.Utlis.Model.Settings;
+using ZdfFlatUI;
 using MessageBox = System.Windows.MessageBox;
 
 namespace XFP.Impact_Ultimate.Controls
