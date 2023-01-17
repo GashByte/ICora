@@ -1,16 +1,20 @@
-﻿using HandyControl.Controls;
+﻿//Copyright(c) XFP Group and Contributors. All rights reserved.
+//Licensed under the MIT License.   
+
+using HandyControl.Controls;
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Threading;
+using System.Net;
+using System.Security.AccessControl;
+using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
 using XFP.Impact_Ultimate.Utlis;
 using XFP.Impact_Ultimate.Utlis.Log;
 using XFP.Impact_Ultimate.Utlis.Model;
-using XFP.Impact_Ultimate.Utlis.Model.Settings;
-using ZdfFlatUI;
 using MessageBox = System.Windows.MessageBox;
 
 namespace XFP.Impact_Ultimate.Controls
@@ -18,18 +22,19 @@ namespace XFP.Impact_Ultimate.Controls
     /// <summary>
     /// HomePage.xaml 的交互逻辑
     /// </summary>
+    [SuppressMessage("Interoperability", "CA1416:验证平台兼容性")]
     public partial class HomePage : UserControl
     {
+        #region Initialze
         DataProvider data = new();
         DeveloperOption option = new();
         LogWriter log = new();
-        UserSettings setter = new();
-        SetterWriter setterWriter = new();
         KeySetter key = new();
+        #endregion
 
-        public bool IsGreedG = false;
-        public string OneTimeID;
-
+        #region define
+        private bool IsGreedG = false;
+        private string OneTimeID;
         private string GenerateId() 
         {
             if (IsGreedG == false)
@@ -48,21 +53,35 @@ namespace XFP.Impact_Ultimate.Controls
                 return OneTimeID;
             }
         }
+        private bool _UseDarkModel = false;
+        #endregion
 
-        public bool _UseDarkModel = false;
-
+        #region MainMethod
         public HomePage()
         {
             InitializeComponent();
 
-            setterWriter.read();
+            var myReg = Registry.LocalMachine.OpenSubKey(
+                    "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", RegistryKeyPermissionCheck.ReadWriteSubTree,
+                    RegistryRights.FullControl);
+            if (myReg.GetValue("XFP.Impact_Ultiamte") != string.Empty)
+            {
+                AutoStart.Content = "已启用";
+            }
         }
+        #endregion
 
+        #region Method
+        /// <summary>
+        /// 启用开发者按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeveloperOptions_Click(object sender, RoutedEventArgs e)
         {
             if (data.ModuleVersion != 3)
             {
-                System.Windows.MessageBox.Show("您的版本不是开发者版本");
+                MessageBox.Show("您的版本不是开发者版本");
                 return;
             }
             else
@@ -72,47 +91,103 @@ namespace XFP.Impact_Ultimate.Controls
             }
         }
 
+        /// <summary>
+        /// 开机自启动按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AutoStart_Click(object sender, RoutedEventArgs e)
         {
-            if (setter.AutoStart == false)
+            if (AutoStart.Content.ToString() != "已启用")
             {
                 AutoStart.Content = "已启用";
-                AutoStart.Opacity = 0.5;
-                setter.AutoStart = true;
-
-                #region Set
-                string path = "\"" + Environment.CurrentDirectory + "\\XFP.Impact_Ultimate.exe\"";
-                RegistryKey rk = Registry.LocalMachine;
-                RegistryKey rk2 = rk.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
-                rk2.SetValue("ICoraShutdown", path);
-                rk2.Close();
-                rk.Close();
-
-                Growl.Info("这容易被杀毒软件杀掉\n若未自启动成功 极有可能是被杀毒软件所杀");
-                #endregion
+                AdminAutoStart();
             }
             else
             {
                 AutoStart.Content = "启用";
-                AutoStart.Opacity = 1;
-                setter.AutoStart = false;
-
-                #region Set
-                string path = Environment.CurrentDirectory + "\\XFP.Impact_Ultimate.exe";
-                RegistryKey rk = Registry.LocalMachine;
-                RegistryKey rk2 = rk.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
-                rk2.SetValue("ICoraShutdown", false);
-                rk2.Close();
-                rk.Close();
-                #endregion
+                CancelAdminAutoStart();
             }
         }
 
-        private void FeedBack_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 用于创建开机自启动的方法
+        /// </summary>
+        private void AdminAutoStart()
         {
-            Process.Start("explorer.exe", "https://gitee.com/MasterGashByte/impact_ultimate_issues/issues");
+            var starupPath = GetType().Assembly.Location;
+            try
+            {
+                var fileName = starupPath;
+                var shortFileName = fileName.Substring(fileName.LastIndexOf('\\') + 1);
+                var myReg = Registry.LocalMachine.OpenSubKey(
+                    "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", RegistryKeyPermissionCheck.ReadWriteSubTree,
+                    RegistryRights.FullControl);
+                if (myReg == null)
+                {
+                    myReg = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
+                }
+                if (myReg != null && myReg.GetValue(shortFileName) != null)
+                {
+                    myReg.DeleteValue(shortFileName);
+                    myReg.SetValue(shortFileName, fileName);
+                }
+                else if (myReg != null && myReg.GetValue(shortFileName) == null)
+                {
+                    myReg.SetValue(shortFileName, fileName);
+                }
+            }
+            catch
+            {
+                return;
+            }
         }
 
+        /// <summary>
+        /// 用于取消开机自启动的方法
+        /// </summary>
+        private void CancelAdminAutoStart()
+        {
+            var starupPath = GetType().Assembly.Location;
+            try
+            {
+                var fileName = starupPath;
+                var shortFileName = fileName.Substring(fileName.LastIndexOf('\\') + 1);
+                var myReg = Registry.LocalMachine.OpenSubKey(
+                    "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", RegistryKeyPermissionCheck.ReadWriteSubTree,
+                    RegistryRights.FullControl);
+                if (myReg == null)
+                {
+                    myReg = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
+                }
+                if (myReg != null && myReg.GetValue(shortFileName) != null)
+                {
+                    myReg.DeleteValue(shortFileName);
+                }
+                else if (myReg != null && myReg.GetValue(shortFileName) == null)
+                {
+                    return;
+                }
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        /// <summary>
+        /// 反馈按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FeedBack_Click(object sender, RoutedEventArgs e)
+            => Process.Start("explorer.exe", "https://gitee.com/MasterGashByte/impact_ultimate_issues/issues");
+
+        /// <summary>
+        /// 清除所有日志按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClearData_Click(object sender, RoutedEventArgs e)
         {
             if(HandyControl.Controls.MessageBox.Show
@@ -123,10 +198,16 @@ namespace XFP.Impact_Ultimate.Controls
                 File.Delete(data.ErrorLog);
                 File.Delete(data.TempLog);
                 File.Delete(data.SettingsData);
+                Growl.Clear();
                 Growl.Success("清除成功");
             }
         }
 
+        /// <summary>
+        /// 卸载ICora按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UnInstall_Click(object sender, RoutedEventArgs e)
         {
             if (HandyControl.Controls.MessageBox.Show
@@ -143,43 +224,97 @@ namespace XFP.Impact_Ultimate.Controls
                 }
                 else
                 {
+                    Growl.Clear();
                     Growl.Error("您的ICora仿佛不齐全 请前往群中重新下载");
                     log.ErrorLog("DetectionSystem: ICora is incomplete", -0, "您的ICora不是完整的 您可以前往群中获取完整的Impact_Ultiamte");
                 }
             }
         }
 
+        /// <summary>
+        /// 打开日志目录
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OpenDataDir_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("explorer.exe", Environment.CurrentDirectory + "\\DataBase");
         }
 
+        /// <summary>
+        /// 打开用户账户数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OpenUserDataDir_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("explorer.exe", Environment.CurrentDirectory + "\\UserData");
         }
 
+        /// <summary>
+        /// 清除WebView的Cookie
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClearWebCookie_Click(object sender, RoutedEventArgs e)
         {
+            Growl.Clear();
             Growl.Success("WebView 仿佛没有留下任何数据");
         }
 
+        /// <summary>
+        /// 查看版本日志
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CheckVersionData_Click(object sender, RoutedEventArgs e)
-        {
-#pragma warning disable CA1416
-            HandyControl.Controls.MessageBox.Show
-                            (
-                "当前版本：1.2.0\n版本类型：常规版\nICoraOne-TimeID：" + GenerateId() + "\n" +
-                "ICora授权码：None"
-                , "ICora V1.2.0",
-                MessageBoxButton.YesNo, MessageBoxImage.Information);
-#pragma warning restore CA1416
-        }
+            => HandyControl.Controls.MessageBox.Show(
+                    "当前版本：" + data.Version + "\n版本类型：" + data.ModeVersion + "\nICoraOne-TimeID：" + GenerateId() + "\n" +
+                    "数据库连接状态: " + IsCanConnect() + "\n\nCopyright(C) XFP Group 2022-2023"
+                    , "ICora V" + data.Version,
+                    MessageBoxButton.YesNo, MessageBoxImage.Information);
 
+        /// <summary>
+        /// 加入QQ群聊
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void JoinQQGroup_Click(object sender, RoutedEventArgs e)
         {
+            Growl.Clear();
             Growl.Info("请手动添加QQ群：\n一群：811979687\n二群：590566763\n劳烦你了 其实本来是有自动跳转的\n不过qq的连接实在是打不开 所以手动添加一下吧\nQQ群已经复制到粘贴板咯");
             Clipboard.SetDataObject("一群: 811979687 | 二群: 590566763");
         }
+
+        /// <summary>
+        /// 通讯判断
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        private static string IsCanConnect()
+        {
+            string url = "https://gashbyte.github.io/ICoraIndex";
+            HttpWebRequest req = null;
+            HttpWebResponse res = null;
+            string ReturnStr = "连接成功";
+            try
+            {
+                req = (HttpWebRequest)WebRequest.Create(url);
+                res = (HttpWebResponse)req.GetResponse();
+            }
+            catch (Exception)
+            {
+                ReturnStr = "连接失败";
+            }
+            finally
+            {
+                if (res != null)
+                {
+                    res.Close();
+                }
+            }
+            return ReturnStr;
+        }
+        #endregion
     }
 }

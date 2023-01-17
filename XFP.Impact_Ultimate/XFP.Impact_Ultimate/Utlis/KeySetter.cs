@@ -1,4 +1,7 @@
-﻿using Microsoft.Win32;
+﻿//Copyright(c) XFP Group and Contributors. All rights reserved.
+//Licensed under the MIT License.   
+
+using Microsoft.Win32;
 
 namespace XFP.Impact_Ultimate.Utlis
 {

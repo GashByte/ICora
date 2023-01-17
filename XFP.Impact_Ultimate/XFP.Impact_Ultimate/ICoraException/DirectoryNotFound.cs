@@ -1,4 +1,7 @@
-﻿using HandyControl.Controls;
+﻿//Copyright(c) XFP Group and Contributors. All rights reserved.
+//Licensed under the MIT License.   
+
+using HandyControl.Controls;
 using System.IO;
 
 namespace XFP.Impact_Ultimate.ICoraException

@@ -1,14 +1,8 @@
-﻿using HandyControl.Controls;
+﻿//Copyright(c) XFP Group and Contributors. All rights reserved.
+//Licensed under the MIT License.   
+
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Security.Cryptography;
-using System.ServiceModel.Channels;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using XFP.Impact_Ultimate.Utlis.Base;
 
 namespace XFP.Impact_Ultimate.Utlis
@@ -19,13 +13,14 @@ namespace XFP.Impact_Ultimate.Utlis
 
         #region definition
         #region public:
-        public string Version => "1.2.0";
+        public string Version => "1.3.0";
         public int ModuleVersion = 2;
         public string DataBasePath = Environment.CurrentDirectory + "\\DataBase";
         public string DataLog = Environment.CurrentDirectory + "\\DataBase\\DataLog.log";
         public string TempLog = Environment.CurrentDirectory + "\\DataBase\\TempLog.log";
         public string ErrorLog = Environment.CurrentDirectory + "\\DataBase\\ErrorLog.log";
         public string SettingsData = Environment.CurrentDirectory + "\\DataBase\\Settings.log";
+        public ModuleVersion ModeVersion = Base.ModuleVersion.BasicEdition;
         #endregion
 
         #region private:

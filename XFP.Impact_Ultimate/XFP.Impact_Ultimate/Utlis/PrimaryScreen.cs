@@ -1,4 +1,7 @@
-﻿using System;
+﻿//Copyright(c) XFP Group and Contributors. All rights reserved.
+//Licensed under the MIT License.   
+
+using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 

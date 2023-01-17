@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿//Copyright(c) XFP Group and Contributors. All rights reserved.
+//Licensed under the MIT License.   
+
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace XFP.Impact_Ultimate.Utlis.Log
 {

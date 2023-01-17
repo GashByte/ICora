@@ -1,4 +1,7 @@
-﻿using System;
+﻿//Copyright(c) XFP Group and Contributors. All rights reserved.
+//Licensed under the MIT License. 
+
+using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -215,13 +218,14 @@ namespace XFP.Impact_Ultimate
 
         private void SettingsMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            menu.SelectedItem = null;
             if (SettingsMenu.SelectedItem != null)
             {
+                menu.SelectedItem = null;
                 MenuInfo info = SettingsMenu.SelectedItem as MenuInfo;
                 switch (info.Name)
                 {
                     case "设置":
+                        ControlPanel.Content = new Controls.Basic.Settings();
                         break;
                     case "登录":
                         break;
@@ -231,34 +235,27 @@ namespace XFP.Impact_Ultimate
 
         private void menu_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SettingsMenu.SelectedItem = null;
             if (menu.SelectedItem != null)
             {
+                SettingsMenu.SelectedItem = null;
                 MenuInfo info = menu.SelectedItem as MenuInfo;
                 switch (info.Name)
                 {
-                    #region Base
                     case "主页":
                         ControlPanel.Content = new HomePage();
                         break;
                     case "开始游戏":
                         ControlPanel.Content = new AkebiPage();
                         break;
-                    #endregion
-
-                    #region Form
                     case "论坛":
                         Process.Start("explorer.exe", "https://www.rmlt.xyz/");
                         break;
-                    #endregion
-
-                    #region View
                     case "关于我们":
                         ControlPanel.Content = new AboutUs();
                         break;
-                    #endregion
                     default:
                         ControlPanel.Content = new HomePage();
+                        Growl.Clear();
                         Growl.Warning("暂未开发\n请期待下个版本");
                         break;
                 }

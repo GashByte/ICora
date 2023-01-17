@@ -1,9 +1,12 @@
-﻿using HandyControl.Controls;
-using HandyControl.Tools.Extension;
+﻿//Copyright(c) XFP Group and Contributors. All rights reserved. All rights reserved.
+//Licensed under the MIT License.
+
+using HandyControl.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -13,28 +16,41 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using Windows.Devices.HumanInterfaceDevice;
+using System.Windows.Input;
 using XFP.Impact_Ultimate.Controls.Game.Utils;
-using XFP.Impact_Ultimate.Model;
 using XFP.Impact_Ultimate.Utils;
 using XFP.Impact_Ultimate.Utlis;
 using XFP.Impact_Ultimate.Utlis.Log;
 using XFP.Impact_Ultimate.Utlis.Model.Files;
 using ZdfFlatUI;
 using MessageBox = HandyControl.Controls.MessageBox;
-using Path = System.IO.Path;
 
 namespace XFP.Impact_Ultimate.Controls
 {
     /// <summary>
+    /// Binding DataList
+    /// </summary>
+    public class LocalDataList
+    {
+        #region Bindings
+
+        public string Name { get; set; }
+
+        #endregion
+    }
+
+    /// <summary>
     /// AkebiPage.xaml 的交互逻辑
     /// </summary>
+    [SuppressMessage("Interoperability", "CA1416:验证平台兼容性")]
     public partial class AkebiPage
     {
-        #region 实例化
+        #region Initializtion
         KeySetter key = new();
         LogWriter log = new();
         INIFiles ini = new();
+
+        public ObservableCollection<LocalDataList> UDataList { get; } = new ObservableCollection<LocalDataList>();
         #endregion
 
         #region define
@@ -42,7 +58,12 @@ namespace XFP.Impact_Ultimate.Controls
         private string AkebiPath = Environment.CurrentDirectory + "\\Impact_Ultimate";
         private string UserData = Environment.CurrentDirectory + "\\UserData";
         private string GenshinServiceDir = Environment.CurrentDirectory + "\\GenshinService";
+
+        private bool InAdd = false;
+        private bool InModify = false;
         #endregion
+
+        #region Main Method
 
         /// <summary>
         /// 构建开始游戏页面
@@ -65,15 +86,24 @@ namespace XFP.Impact_Ultimate.Controls
                 "国际服 | Global" 
             };
 
-            UChooseService.ItemsSource = GenshinService;
+            if (!Directory.Exists(AkebiPath))
+            {
+                Directory.CreateDirectory(AkebiPath);
+            }
 
+            UChooseService.ItemsSource = GenshinService;
+            UChooseAccount.ItemsSource = UDataList;
+
+            RefreshList();
             #region 基础设置
             try
             {
                 #region 读取配置文件
                 UGenshinImpactPath.Text = key.gk("Genshin Impact Path") == string.Empty ? "没有找到你的原神" : key.gk("Genshin Impact Path");
-                UScreenWidth.Text = key.gk("Screen Width") == string.Empty ? "1920" : key.gk("Screen Width");
-                UScreenHeight.Text = key.gk("Screen Height") == string.Empty ? "1080" : key.gk("Screen Height");
+                UScreenWidth.Text = key.gk("Screen Width");
+                UScreenHeight.Text = key.gk("Screen Height");
+                UChooseAccount.SelectedItem = key.gk("Account");
+                UAccountChange.Text = UChooseAccount.Text;
 
                 if (key.gk("Start Game Model") == "注入DLL")
                 {
@@ -102,9 +132,9 @@ namespace XFP.Impact_Ultimate.Controls
                     UBorderless.Content = "启用";
 
                 if (key.gk("Check CLibrary") == "True")
-                    UBorderless.Content = "已启用";
+                    CheckCL.Content = "已启用";
                 else
-                    UBorderless.Content = "启用";
+                    CheckCL.Content = "启用";
                 #endregion
 
                 #region 服务器判定
@@ -149,106 +179,56 @@ namespace XFP.Impact_Ultimate.Controls
             #endregion
         }
 
-        /// <summary>
-        /// 选择游戏路径
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ChooseGamePath_Click(object sender, RoutedEventArgs e)
-        {
-            var openFileDialog = new Microsoft.Win32.OpenFileDialog()
-            {
-                // 文件后缀
-                Filter = "Exe Files (*.exe)|*.exe"
-            };
-            var result = openFileDialog.ShowDialog();
-            if (result == true)
-            {
-                UGenshinImpactPath.Text = openFileDialog.FileName;
-                key.sk("Genshin Impact Path", openFileDialog.FileName);
-            }
-        }
+        #endregion
+
+        #region Normal Method
 
         /// <summary>
-        /// 选择游戏启动模式
+        /// 刷新List
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void UStartModel_Click(object sender, RoutedEventArgs e)
+        private void RefreshList()
         {
-            if (UStartModel.Content.ToString() == "默认模式")
+            UDataList.Clear();
+            DirectoryInfo root = new DirectoryInfo(UserData);
+            FileInfo[] files = root.GetFiles();
+            foreach (FileInfo file in files)
             {
-                UStartModel.Content = "注入DLL";
+                UDataList.Add(new LocalDataList()
+                {
+                    Name = file.Name
+                });
+            }
+
+            if (UChooseAccount.Items.Count > 0)
+            {
+                DelAccount.IsEnabled = true;
+                BindingUid.IsEnabled = true;
+                ModifyAccount.IsEnabled = true;
+                splitButton.Visibility = Visibility.Visible;
             }
             else
             {
-                UStartModel.Content = "默认模式";
+                DelAccount.IsEnabled = false;
+                BindingUid.IsEnabled = false;
+                ModifyAccount.IsEnabled = false;
+                splitButton.Visibility = Visibility.Hidden;
             }
-            UGameStartModel.Text = UStartModel.Content.ToString();
-            key.sk("Start Game Model", UGameStartModel.Text);
-        }
-
-        private void ChooseAccount_Click(object sender, RoutedEventArgs e)
-        {
-            
         }
 
         /// <summary>
-        /// 开始游戏的按钮
+        /// 切换账户
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void StartGameButton_Click(object sender, RoutedEventArgs e)
+        private void Switch()
         {
-            if (UGameStartModel.Text == "默认模式")
-            {
-                StartGameNomal();
-                Growl.Success("启动成功 祝你游玩愉快！");
-            }
-            else if (UGameStartModel.Text == "注入DLL")
-            {
-                if (File.Exists(CLPath))
-                {
-                    if (CheckCL.Content == "启用")
-                    {
-                        StartGame();
-                        return;
-                    }
-                    // CL大小校验
-                    FileInfo fileInfo = new FileInfo(CLPath);
-                    long localsize = fileInfo.Length;
-                    HttpWebRequest request = (HttpWebRequest)
-                        WebRequest.Create("https://gitee.com/MasterGashByte/download/releases/download/CLibrary/CLibrary.dll");
-                    HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-                    if (localsize != response.ContentLength)
-                    {
-                        if (ZMessageBox.Show(
-                            System.Windows.Window.GetWindow(this),
-                            "您的Dll大小不正确 这也许是服务器返回了不正确的大小 是否要尝试启动？选择否则下载服务器中的Dll"
-                            , "", MessageBoxButton.YesNoCancel, EnumPromptType.Error) == MessageBoxResult.Yes)
-                        {
-                            Growl.Warning("如果启动失败(原神未启动)则是Dll不正确导致的\n您可以下载服务器中的Dll或者下载群中的Akebi 然后手动导入Dll\n" +
-                                "您若需要手动导入Dll 需要将Dll放置到下面这个文件夹：\n" + AkebiPath);
-                            StartGame();
-                        }
-                        else
-                        {
-                            Growl.Info("正在下载");
-                            File.Delete(CLPath);
-                            CLDownloader();
-                        }
-                    }
-                    else
-                    {
-                        StartGame();
-                    }
-                }
-                else
-                {
-                    Growl.Error("您的CLibrary不存在 正在为您下载");
-                    CLDownloader();
-                }
-            }
+            Thread.Sleep(100);
+            YSAccount acct = YSAccount.ReadFromDisk(UChooseAccount.Text);
+            acct.WriteToRegedit();
+
+            key.sk("Account", UChooseAccount.Text);
+            UAccountChange.Text = UChooseAccount.Text;
+
+            Growl.Clear();
+            Growl.Success($"切换成功 当前账户:{UChooseAccount.Text}");
         }
 
         /// <summary>
@@ -256,69 +236,102 @@ namespace XFP.Impact_Ultimate.Controls
         /// </summary>
         public void StartGame()
         {
-            if (string.IsNullOrEmpty(UGenshinImpactPath.Text))
-            {
-                Growl.Error("您的原神路径是空的");
-            }
-            else
-            {
-                if (YuanShenIsRunning() && MultStart.Content.ToString() == "启用")
+            try {
+                if (string.IsNullOrEmpty(UGenshinImpactPath.Text))
                 {
-                    Growl.Error("原神已经启动 请关闭后再试");
-                    return;
+                    Growl.Clear();
+                    Growl.Error("您的原神路径是空的");
                 }
-                try
+                else
                 {
-                    bool TokenRet = DllUtils.OpenProcessToken(DllUtils.GetCurrentProcess(), 0xF00FF, out IntPtr hToken);
-                    var si = new DllUtils.STARTUPINFOEX();
-                    si.StartupInfo.cb = Marshal.SizeOf(si);
-                    if (hToken == IntPtr.Zero)
+                    if (YuanShenIsRunning() && MultStart.Content.ToString() == "启用")
                     {
-                        Growl.Warning("提权失败 正常启动");
-                        StartGameNomal();
+                        Growl.Clear();
+                        Growl.Error("原神已经启动 请关闭后再试");
                         return;
                     }
-                    var pExporer = Process.GetProcessesByName("explorer")[0];
-                    if (pExporer == null)
+                    try
                     {
-                        Growl.Warning("Explorer未找到 正常启动");
-                        StartGameNomal();
-                        return;
-                    }
-                    IntPtr handle = DllUtils.OpenProcess(0xF0000 | 0x100000 | 0xFFFF, false, (uint)pExporer.Id);
-                    var lpSize = IntPtr.Zero;
-                    DllUtils.InitializeProcThreadAttributeList(IntPtr.Zero, 1, 0, ref lpSize);
-                    si.lpAttributeList = Marshal.AllocHGlobal(lpSize);
-                    DllUtils.InitializeProcThreadAttributeList(si.lpAttributeList, 1, 0, ref lpSize);
-                    if (DllUtils.UpdateProcThreadAttribute(si.lpAttributeList, 0, (IntPtr)0x00020004, handle, (IntPtr)IntPtr.Size, IntPtr.Zero, IntPtr.Zero))
-                    {
-                        Growl.Error("更新线程失败");
-                    }
-                    DirectoryInfo path = new DirectoryInfo(UGenshinImpactPath.Text);
-                    var pi = new DllUtils.PROCESS_INFORMATION();
-                    var result = DllUtils.CreateProcessAsUser(hToken, Path.Combine(UGenshinImpactPath.Text).ToString(),
-                        RunParameters.Text, IntPtr.Zero, IntPtr.Zero, false, 0x00080000 | 0x00000004,
-                        IntPtr.Zero, Path.Combine(path.Parent.Parent.FullName, "Genshin Impact Game").ToString(), ref si.StartupInfo, out pi);
-                    if (!result)
-                    {
-                        Growl.Warning("启动暂停线程失败 正常启动");
-                        StartGameNomal();
-                        return;
-                    }
-                    DllUtils.DeleteProcThreadAttributeList(si.lpAttributeList);
-                    new Thread(() =>
-                    {
-                        InjectDll(pi.hProcess);
-                        Thread.Sleep(2000);
-                        DllUtils.ResumeThread(pi.hThread);
-                        DllUtils.CloseHandle(pi.hProcess);
-                    }).Start();
-                    Growl.Success("启动成功 祝你游玩愉快！");
-                }
-                catch
-                {
+                        bool TokenRet = DllUtils.OpenProcessToken(DllUtils.GetCurrentProcess(), 0xF00FF, out IntPtr hToken);
+                        var si = new DllUtils.STARTUPINFOEX();
+                        si.StartupInfo.cb = Marshal.SizeOf(si);
+                        if (hToken == IntPtr.Zero)
+                        {
+                            Growl.Clear();
+                            Growl.Warning("提权失败 正常启动");
+                            StartGameNomal();
+                            return;
+                        }
+                        var pExporer = Process.GetProcessesByName("explorer")[0];
+                        if (pExporer == null)
+                        {
+                            Growl.Clear();
+                            Growl.Warning("Explorer未找到 正常启动");
+                            StartGameNomal();
+                            return;
+                        }
+                        IntPtr handle = DllUtils.OpenProcess(0xF0000 | 0x100000 | 0xFFFF, false, (uint)pExporer.Id);
+                        var lpSize = IntPtr.Zero;
+                        DllUtils.InitializeProcThreadAttributeList(IntPtr.Zero, 1, 0, ref lpSize);
+                        si.lpAttributeList = Marshal.AllocHGlobal(lpSize);
+                        DllUtils.InitializeProcThreadAttributeList(si.lpAttributeList, 1, 0, ref lpSize);
+                        if (DllUtils.UpdateProcThreadAttribute(si.lpAttributeList, 0, (IntPtr)0x00020004, handle, (IntPtr)IntPtr.Size, IntPtr.Zero, IntPtr.Zero))
+                        {
+                            Growl.Clear();
+                            Growl.Error("更新线程失败");
+                        }
+                        DirectoryInfo path = new DirectoryInfo(UGenshinImpactPath.Text);
+                        var pi = new DllUtils.PROCESS_INFORMATION();
 
+                        string args = null;
+                        if (key.gk("Is Full Screen") == "True")
+                        {
+                            args += new CommandLineBuilder()
+                                .AppendIf("-screen-fullscreen", true)
+                                .ToString();
+                        }
+                        if (key.gk("Border less") == "True")
+                        {
+                            args += new CommandLineBuilder()
+                                .AppendIf("-popupwindow", true)
+                                .ToString();
+                        }
+                        args += new CommandLineBuilder()
+                            .Append("-screen-height", UScreenHeight.Text.ToString())
+                            .Append("-screen-width", UScreenWidth.Text.ToString())
+                            .ToString();
+
+                        var result = DllUtils.CreateProcessAsUser(hToken, Path.Combine(UGenshinImpactPath.Text).ToString(),
+                            RunParameters.Text == string.Empty ? args : RunParameters.Text, IntPtr.Zero, IntPtr.Zero, false, 0x00080000 | 0x00000004,
+                            IntPtr.Zero, Path.Combine(path.Parent.Parent.FullName, "Genshin Impact Game").ToString(), ref si.StartupInfo, out pi);
+                        if (!result)
+                        {
+                            Growl.Clear();
+                            Growl.Warning("启动暂停线程失败 正常启动");
+                            StartGameNomal();
+                            return;
+                        }
+                        DllUtils.DeleteProcThreadAttributeList(si.lpAttributeList);
+                        new Thread(() =>
+                        {
+                            InjectDll(pi.hProcess);
+                            Thread.Sleep(2000);
+                            DllUtils.ResumeThread(pi.hThread);
+                            DllUtils.CloseHandle(pi.hProcess);
+                        }).Start();
+                        Growl.Clear();
+                        Growl.Success("启动成功 祝你游玩愉快！");
+                    }
+                    catch
+                    {
+
+                    }
                 }
+            }
+            catch(Exception ex) 
+            {
+                Growl.Clear();
+                Growl.Error("在启动发现了异常：" + ex.Message);
             }
         }
 
@@ -391,20 +404,53 @@ namespace XFP.Impact_Ultimate.Controls
         /// <summary>
         /// CL下载
         /// </summary>
-        private void CLDownloader()
+        private void CLDownloader(bool UseCLDownloader)
         {
-            var localpath = Environment.CurrentDirectory;
-            if (File.Exists(localpath + "\\CLDownloader.exe")
-                && File.Exists(localpath + "\\CLDownloader.deps.json")
-                && File.Exists(localpath + "\\CLDownloader.dll")
-                && File.Exists(localpath + "\\CLDownloader.runtimeconfig.json"))
+            if (UseCLDownloader)
             {
-                Process.Start(localpath + "\\CLDownloader.exe");
+                var localpath = Environment.CurrentDirectory;
+                if (File.Exists(localpath + "\\CLDownloader.exe")
+                    && File.Exists(localpath + "\\CLDownloader.deps.json")
+                    && File.Exists(localpath + "\\CLDownloader.dll")
+                    && File.Exists(localpath + "\\CLDownloader.runtimeconfig.json"))
+                {
+                    Process.Start(localpath + "\\CLDownloader.exe");
+                }
+                else
+                {
+                    Growl.Error("您的ICora仿佛不完整 请前往群中获取完整的ICora");
+                    log.ErrorLog("DetectionSystem: Impact_Ultimate is incomplete", -0, "您的Impact_Ultimate不是完整的 您可以前往群中获取完整的Impact_Ultiamte");
+                }
             }
             else
             {
-                Growl.Error("您的ICora仿佛不完整 请前往群中获取完整的ICora");
-                log.ErrorLog("DetectionSystem: Impact_Ultimate is incomplete", -0, "您的Impact_Ultimate不是完整的 您可以前往群中获取完整的Impact_Ultiamte");
+                try
+                {
+                    HttpWebRequest request = WebRequest.CreateHttp(
+                           "https://gitee.com/MasterGashByte/download/releases/download/CLibrary/CLibrary.dll");
+                    HttpWebResponse? response = request.GetResponse() as HttpWebResponse;
+                    Stream responseStream = response.GetResponseStream();
+                    Stream stream = new FileStream(CLPath, FileMode.Create);
+                    byte[] bArr = new byte[1024];
+                    int size = responseStream.Read(bArr, 0, bArr.Length);
+                    long totalBytesRead = 0;
+                    do
+                    {
+                        stream.Write(bArr, 0, size);
+                        size = responseStream.Read(bArr, 0, bArr.Length);
+                    } while (size > 0);
+                    stream.Close();
+                    responseStream.Close();
+
+                    Growl.Success("下载成功 以及尝试为您开始游戏");
+
+                    StartGame();
+                }
+                catch (Exception ex)
+                {
+                    Growl.Error($"出现异常: {ex.Message}");
+                    log.ErrorLog(ex.Message, -1);
+                }
             }
         }
 
@@ -413,14 +459,17 @@ namespace XFP.Impact_Ultimate.Controls
         /// </summary>
         private void StartGameNomal()
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo();
+            Stopwatch sw = new();
+            string args = "";
+            ProcessStartInfo startInfo = new();
             startInfo.UseShellExecute = true;
             startInfo.WorkingDirectory = Environment.CurrentDirectory;
             startInfo.FileName = Path.Combine(UGenshinImpactPath.Text);
+            startInfo.Verb = "RunAs";
             if (key.gk("Is Full Screen") == "False"
                 && key.gk("Border less") == "False")
             {
-                string args = new CommandLineBuilder()
+                args = new CommandLineBuilder()
                     .Append("-screen-height", UScreenHeight.Text.ToString())
                     .Append("-screen-width", UScreenWidth.Text.ToString())
                     .ToString();
@@ -428,7 +477,6 @@ namespace XFP.Impact_Ultimate.Controls
             }
             else
             {
-                string args = null;
                 if (key.gk("Is Full Screen") == "True")
                 {
                     args += new CommandLineBuilder()
@@ -447,8 +495,394 @@ namespace XFP.Impact_Ultimate.Controls
                     .ToString();
                 startInfo.Arguments = args;
             }
-            startInfo.Verb = "runas";
-            Process.Start(startInfo);
+
+            new Thread(() => 
+            {
+                sw.Start();
+                Process GenshinProc = Process.Start(startInfo);
+
+                GenshinProc.EnableRaisingEvents = true;
+                GenshinProc.Exited += (sender, e) =>
+                {
+                    sw.Stop();
+                    TimeSpan ts = sw.Elapsed;
+                    Growl.Clear();
+                    Growl.Success($"游戏结束了 您游玩了: {ts.Hours}小时," +
+                        $" {ts.Minutes}分钟, {ts.Seconds}秒\n希望它是一段每秒的路途");
+                };
+            }).Start();
+        }
+
+        #endregion
+
+        #region Controls Method
+
+        /// <summary>
+        /// 选择游戏路径
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChooseGamePath_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new Microsoft.Win32.OpenFileDialog()
+            {
+                // 文件后缀
+                Filter = "Exe Files (*.exe)|*.exe"
+            };
+            var result = openFileDialog.ShowDialog();
+            if (result == true)
+            {
+                UGenshinImpactPath.Text = openFileDialog.FileName;
+                key.sk("Genshin Impact Path", openFileDialog.FileName);
+            }
+        }
+
+        /// <summary>
+        /// 选择游戏启动模式
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UStartModel_Click(object sender, RoutedEventArgs e)
+        {
+            if (UStartModel.Content.ToString() == "默认模式")
+            {
+                UStartModel.Content = "注入DLL";
+            }
+            else
+            {
+                UStartModel.Content = "默认模式";
+            }
+            UGameStartModel.Text = UStartModel.Content.ToString();
+            key.sk("Start Game Model", UGameStartModel.Text);
+        }
+
+        /// <summary>
+        /// 账户选择逻辑
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChooseAccount_Click(object sender, RoutedEventArgs e)
+        {
+            if (!InModify)
+            {
+                if (AccountName.Visibility == Visibility.Hidden)
+                {
+                    InAdd = true;
+                    AccountName.Visibility = Visibility.Visible;
+                    Growl.Clear();
+                    Growl.Info("输入完成后按下回车确定, ESC退出");
+                }
+                else
+                {
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// AccountName TextBox回车判断
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AccountName_KeyUp(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Escape) 
+            {
+                AccountName.Visibility = Visibility.Hidden;
+                AccountName.Text = string.Empty;
+                InAdd = false;
+                return;
+            }
+            if (AccountName.Text.Length > 15)
+            {
+                Growl.Clear();
+                Growl.Warning("名称最高只能有15个字符哦");
+                AccountName.Text = AccountName.Text.Substring(0, AccountName.Text.Length - 1);
+                return;
+            }
+            if (AccountName.Text == string.Empty)
+            {
+                Growl.Clear();
+                Growl.Warning("请输入账户名称");
+                return;
+            }
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                try
+                {
+                    UDataList.Add(new LocalDataList()
+                    {
+                        Name = AccountName.Text
+                    });
+
+                    YSAccount acct = YSAccount.ReadFromRegedit(true);
+                    acct.Name = AccountName.Text;
+                    acct.WriteToDisk();
+
+                    key.sk("Account", AccountName.Text);
+
+                    UChooseAccount.ItemsSource = UDataList;
+
+                    AccountName.Visibility = Visibility.Hidden;
+                    AccountName.Text = string.Empty;
+                    InAdd = false;
+
+                    Growl.Clear();
+                    Growl.Success($"添加成功 账户{AccountName.Text}");
+                }
+                catch (Exception ex)
+                {
+                    Growl.Clear();
+                    Growl.Error(ex.Message);
+                    log.ErrorLog(ex.Message, -1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 赋值的异常处理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UChooseAccount_DropDownClosed(object sender, EventArgs e)
+        {
+            if (UChooseAccount.Text != UAccountChange.Text)
+            {
+                Switch();
+            }
+        }
+
+        /// <summary>
+        /// 删除账户
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DelAccount_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("你确定要这么做？这是不可逆的操作", "防误触提醒", MessageBoxButton.YesNo, MessageBoxImage.Hand) == MessageBoxResult.Yes)
+            {
+                if (UChooseAccount.SelectedIndex > -1)
+                {
+                    string name = UChooseAccount.Text;
+                    YSAccount.DeleteFromDisk(name);
+
+                    UAccountChange.Text = string.Empty;
+
+                    key.sk("Accout", string.Empty);
+
+                    Growl.Clear();
+                    Growl.Success($"您跟此账户说拜拜了 账户: {name}");
+
+                    RefreshList();
+                }
+                else
+                {
+                    Growl.Clear();
+                    Growl.Warning("您未选择某项");
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 为当前账户绑定UID
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BindingUid_Click(object sender, RoutedEventArgs e)
+        {
+            Growl.Info("此按钮将在后期被开放");
+        }
+
+        /// <summary>
+        /// 修改账户名称
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ModifyAccount_Click(object sender, RoutedEventArgs e)
+        {
+            if (!InAdd)
+            {
+                if (UChooseAccount.SelectedIndex > -1)
+                {
+                    ModifAccountName.Visibility = Visibility.Visible;
+                    Growl.Clear();
+                    Growl.Info("输入完成后按下回车确定, ESC退出");
+                    InModify = true;
+                }
+                else
+                {
+                    Growl.Clear();
+                    Growl.Warning("您未选择某项");
+                    return;
+                }
+            }
+            
+        }
+
+        /// <summary>
+        /// ModifyAccountName TextBox回车判断
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ModifAccountName_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Escape)
+            {
+                ModifAccountName.Text = string.Empty;
+                ModifAccountName.Visibility = Visibility.Hidden;
+                InModify = false;
+                return;
+            }
+            if (ModifAccountName.Text.Length > 15)
+            {
+                Growl.Clear();
+                Growl.Warning("名称最高只能有15个字符哦");
+                ModifAccountName.Text = ModifAccountName.Text.Substring(0, ModifAccountName.Text.Length - 1);
+                return;
+            }
+            if (ModifAccountName.Text == string.Empty)
+            {
+                Growl.Clear();
+                Growl.Warning("请输入账户名称");
+                return;
+            }
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                try
+                {
+                    File.Move(UserData + "\\" + UAccountChange.Text, UserData + "\\" + ModifAccountName.Text);
+                    key.sk("Account", ModifAccountName.Text);
+                    UAccountChange.Text = ModifAccountName.Text;
+
+                    RefreshList();
+
+                    ModifAccountName.Text = string.Empty;
+                    ModifAccountName.Visibility = Visibility.Hidden;
+
+                    Growl.Clear();
+                    Growl.Success("修改成功！");
+                    InModify = false;
+                }
+                catch (Exception ex)
+                {
+                    Growl.Clear();
+                    Growl.Error(ex.Message);
+                    log.ErrorLog(ex.Message, -1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 开始游戏的按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StartGameButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (UGameStartModel.Text == "默认模式")
+            {
+                StartGameNomal();
+                Growl.Clear();
+                Growl.Success("启动成功 祝你游玩愉快！");
+            }
+            else if (UGameStartModel.Text == "注入DLL")
+            {
+                try
+                {
+                    if (File.Exists(CLPath))
+                    {
+                        if (CheckCL.Content == "启用")
+                        {
+                            StartGame();
+                            return;
+                        }
+                        // CL大小校验
+                        FileInfo fileInfo = new FileInfo(CLPath);
+                        long localsize = fileInfo.Length;
+                        HttpWebRequest request = (HttpWebRequest)
+                            WebRequest.Create("https://gitee.com/MasterGashByte/download/releases/download/CLibrary/CLibrary.dll");
+                        HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                        if (localsize != response.ContentLength)
+                        {
+                            if (ZMessageBox.Show(
+                                System.Windows.Window.GetWindow(this),
+                                "您的Dll大小不正确 这也许是服务器返回了不正确的大小 是否要尝试启动？选择否则下载服务器中的Dll"
+                                , "", MessageBoxButton.YesNoCancel, EnumPromptType.Error) == MessageBoxResult.Yes)
+                            {
+                                Growl.Clear();
+                                Growl.Warning("如果启动失败(原神未启动)则是Dll不正确导致的\n您可以下载服务器中的Dll或者下载群中的Akebi 然后手动导入Dll\n" +
+                                    "您若需要手动导入Dll 需要将Dll放置到下面这个文件夹：\n" + AkebiPath);
+                                StartGame();
+                            }
+                            else
+                            {
+                                Growl.Clear();
+                                Growl.Info("正在下载\n什么？没有反应 下拉开始按钮 点击下载Clibrary");
+                                File.Delete(CLPath);
+                                CLDownloader(true);
+                            }
+                        }
+                        else
+                        {
+                            StartGame();
+                        }
+                    }
+                    else
+                    {
+                        Growl.Clear();
+                        Growl.Error("您的CLibrary不存在 正在为您下载");
+                        CLDownloader(true);
+                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Growl.Clear();
+                    Growl.Warning("请以管理员模式打开ICora后再试");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 内置方法下载Clibrary
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DownloadClibrary_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("这也许会出现短暂的卡顿 确定要这么做？",
+                "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    if (File.Exists(CLPath))
+                    {
+                        FileInfo fileInfo = new FileInfo(CLPath);
+                        long localsize = fileInfo.Length;
+                        HttpWebRequest request = WebRequest.CreateHttp(
+                                    "https://gitee.com/MasterGashByte/download/releases/download/CLibrary/CLibrary.dll");
+                        HttpWebResponse? response = request.GetResponse() as HttpWebResponse;
+
+                        if (localsize != response.ContentLength)
+                        {
+                            CLDownloader(false);
+                        }
+                        else
+                        {
+                            Growl.Success("您的CLibrary看起来很正常");
+                        }
+                    }
+                    else
+                    {
+                        CLDownloader(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Growl.Error($"出现异常：{ex.Message}");
+                    log.ErrorLog(ex.Message, -1);
+                }
+            }
         }
 
         #region 更多设置
@@ -467,7 +901,7 @@ namespace XFP.Impact_Ultimate.Controls
             }
         }
 
-        private bool _UIsFullScreen = false;
+        private bool _UIsFullScreen;
         private void UIsFullScreen_Click(object sender, RoutedEventArgs e)
         {
             if (_UIsFullScreen == false)
@@ -484,7 +918,7 @@ namespace XFP.Impact_Ultimate.Controls
             }
         }
 
-        private bool _UBorderless = false;
+        private bool _UBorderless;
         private void UBorderless_Click(object sender, RoutedEventArgs e)
         {
             if (_UBorderless == false)
@@ -501,49 +935,81 @@ namespace XFP.Impact_Ultimate.Controls
             }
         }
 
+        private bool _UScreenWidthChanged;
         private void UScreenWidth_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (UScreenWidth.Text != string.Empty)
+            if (_UScreenWidthChanged)
             {
-                if (int.Parse(UScreenWidth.Text) < 10000)
+                if (UScreenWidth.Text != string.Empty)
                 {
-                    key.sk("Screen Width", UScreenWidth.Text);
-                    return;
+                    if (Regex.IsMatch(UScreenWidth.Text, @"^-?[1-9]\d*$|^0$"))
+                    {
+                        if (int.Parse(UScreenWidth.Text) < 10000)
+                        {
+
+                            key.sk("Screen Width", UScreenWidth.Text);
+                            return;
+                        }
+                        else
+                        {
+                            Growl.Clear();
+                            Growl.Warning("请输入正确的宽度");
+                            UScreenWidth.Text = "1920";
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Growl.Clear();
+                        Growl.Warning("请输入正确的宽度");
+                        UScreenWidth.Text = string.Empty;
+                        return;
+                    }
                 }
                 else
                 {
-                    Growl.Warning("请输入正确的宽度");
-                    UScreenWidth.Text = "1920";
                     return;
                 }
             }
-            else
-            {
-                UScreenWidth.Text = "1920";
-                return;
-            }
+            _UScreenWidthChanged = true;
         }
 
+        private bool _UScreenHeightChanged;
         private void UScreenHeight_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (UScreenHeight.Text != string.Empty)
+            if (_UScreenHeightChanged)
             {
-                if (int.Parse(UScreenHeight.Text) < 10000)
+                if (UScreenHeight.Text != string.Empty)
                 {
-                    key.sk("Screen Height", UScreenHeight.Text);
+                    if (Regex.IsMatch(UScreenHeight.Text, @"^-?[1-9]\d*$|^0$"))
+                    {
+                        if (int.Parse(UScreenHeight.Text) < 10000)
+                        {
+
+                            key.sk("Screen Height", UScreenHeight.Text);
+                            return;
+                        }
+                        else
+                        {
+                            Growl.Warning("请输入正确的宽度");
+                            UScreenHeight.Text = "1080";
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Growl.Clear();
+                        Growl.Warning("请输入正确的宽度");
+                        UScreenHeight.Text = string.Empty;
+                        return;
+                    }
                 }
                 else
                 {
-                    Growl.Warning("请输入正确的宽度");
-                    UScreenHeight.Text = "1080";
                     return;
                 }
             }
-            else
-            {
-                UScreenHeight.Text = "1080";
-                return;
-            }
+            _UScreenHeightChanged = true;
         }
 
         private bool _UCheckCL;
@@ -580,6 +1046,7 @@ namespace XFP.Impact_Ultimate.Controls
                 {
                     if (!Directory.Exists(GenshinServiceDir))
                     {
+                        Growl.Clear();
                         Growl.Error("没有找到转服包资源 请前往群中连接下载\n下载后请保存至\n"
                             + Environment.CurrentDirectory + "\\GenshinService文件夹 \n已经为您打开");
                         Directory.CreateDirectory(GenshinServiceDir);
@@ -632,6 +1099,7 @@ namespace XFP.Impact_Ultimate.Controls
                                 GameConverter game = new();
                                 game.Converter();
                             }
+                            Growl.Clear();
                             Growl.Success("转服成功 当前服务器：渠道服 | 世界树\n若出现无法进入 还是官方服的问题 请反馈");
                         }
                     }
@@ -640,14 +1108,18 @@ namespace XFP.Impact_Ultimate.Controls
                 }
                 catch (DirectoryNotFoundException)
                 {
+                    Growl.Clear();
                     Growl.Warning("找不到游戏配置文件 config.ini");
                 }
                 catch (UnauthorizedAccessException)
                 {
+                    Growl.Clear();
                     Growl.Warning("无法读取或保存配置文件 请以管理员模式重启ICora然后重试");
                     Growl.Info("服务器未切换 当前服务器：" + UGameService.Text);
                 }
             }
         }
+
+        #endregion
     }
 }

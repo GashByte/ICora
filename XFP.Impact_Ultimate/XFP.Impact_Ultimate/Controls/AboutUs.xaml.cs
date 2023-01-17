@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿//Copyright(c) XFP Group and Contributors. All rights reserved.
+//Licensed under the MIT License.
+
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using HandyControl.Controls;
@@ -38,7 +41,24 @@ namespace XFP.Impact_Ultimate.Controls
 
         private void UserUseAgreement_Click(object sender, RoutedEventArgs e)
         {
+            Process.Start("explorer.exe", "https://gitee.com/MasterGashByte/impact_ultimate_issues/blob/master/UserUseAgreement.md");
+        }
 
+        private void FeedBackQ_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("explorer.exe", "https://gitee.com/MasterGashByte/impact_ultimate_issues/issues");
+        }
+
+        private void ICoraIndex_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("explorer.exe", "https://gashbyte.github.io/ICoraIndex/");
+        }
+
+        private void afadian_Click(object sender, RoutedEventArgs e)
+        {
+            Growl.Clear();
+            Growl.Info("感谢支持 但不支持 UwU");
+            //Process.Start("explorer.exe", "https://afdian.net/a/XFP-Group");
         }
     }
 }

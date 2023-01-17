@@ -14,6 +14,18 @@
     <SupportedOSPlatformVersion>10.0.18362.0</SupportedOSPlatformVersion>
     <StartupObject>XFP.Impact_Ultimate.App</StartupObject>
     <PlatformTarget>x64</PlatformTarget>
+    <UseWindowsForms>False</UseWindowsForms>
+    <BaseOutputPath>bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <GenerateDocumentationFile>False</GenerateDocumentationFile>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <SignAssembly>False</SignAssembly>
+    <Copyright></Copyright>
+    <RepositoryUrl></RepositoryUrl>
+    <RepositoryType></RepositoryType>
+    <AssemblyVersion></AssemblyVersion>
+    <FileVersion></FileVersion>
+    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="BackGround.png" />
@@ -45,9 +57,6 @@
     <ProjectReference Include="..\..\WPF.UI-master\ZUI.VideoPlayer\ZUI.VideoPlayer.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="BackGround.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
     <EmbeddedResource Include="GashByte-透明.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
