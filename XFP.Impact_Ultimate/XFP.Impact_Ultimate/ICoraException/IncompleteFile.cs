@@ -3,7 +3,7 @@
 
 using HandyControl.Controls;
 using System.IO;
-using XFP.Impact_Ultimate.Utlis.Log;
+using XFP.Impact_Ultimate.Utils.Log;
 
 namespace XFP.Impact_Ultimate.ICoraException
 {

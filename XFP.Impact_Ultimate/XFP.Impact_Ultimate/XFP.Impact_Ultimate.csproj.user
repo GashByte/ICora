@@ -20,10 +20,16 @@
     <Compile Update="Controls\AkebiPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Controls\Basic\LoginFormMihoyo.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Controls\Basic\Settings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Controls\HomePage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\HoyolabAccount.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Controls\NonClientAreaContent.xaml.cs">
@@ -37,10 +43,16 @@
     <Page Update="Controls\AkebiPage.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Controls\Basic\LoginFormMihoyo.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Controls\Basic\Settings.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Controls\HomePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\HoyolabAccount.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Controls\NonClientAreaContent.xaml">

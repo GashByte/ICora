@@ -9,12 +9,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Security.AccessControl;
-using System.Security.Policy;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using XFP.Impact_Ultimate.Utlis;
-using XFP.Impact_Ultimate.Utlis.Log;
-using XFP.Impact_Ultimate.Utlis.Model;
+using XFP.Impact_Ultimate.Utils;
+using XFP.Impact_Ultimate.Utils.Base;
+using XFP.Impact_Ultimate.Utils.Log;
+using XFP.Impact_Ultimate.Utils.Model;
 using MessageBox = System.Windows.MessageBox;
 
 namespace XFP.Impact_Ultimate.Controls
@@ -35,7 +36,7 @@ namespace XFP.Impact_Ultimate.Controls
         #region define
         private bool IsGreedG = false;
         private string OneTimeID;
-        private string GenerateId() 
+        private string GenerateId()
         {
             if (IsGreedG == false)
             {
@@ -49,7 +50,7 @@ namespace XFP.Impact_Ultimate.Controls
                 return OneTimeID;
             }
             else
-            { 
+            {
                 return OneTimeID;
             }
         }
@@ -79,7 +80,7 @@ namespace XFP.Impact_Ultimate.Controls
         /// <param name="e"></param>
         private void DeveloperOptions_Click(object sender, RoutedEventArgs e)
         {
-            if (data.ModuleVersion != 3)
+            if (data.ModeVersion != ModuleVersion.DevelopmentEdition)
             {
                 MessageBox.Show("您的版本不是开发者版本");
                 return;
@@ -190,9 +191,9 @@ namespace XFP.Impact_Ultimate.Controls
         /// <param name="e"></param>
         private void ClearData_Click(object sender, RoutedEventArgs e)
         {
-            if(HandyControl.Controls.MessageBox.Show
-                ("您确定要这么做？", "防误触提示", 
-                MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes) 
+            if (HandyControl.Controls.MessageBox.Show
+                ("您确定要这么做？", "防误触提示",
+                MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 File.Delete(data.DataLog);
                 File.Delete(data.ErrorLog);
@@ -259,7 +260,51 @@ namespace XFP.Impact_Ultimate.Controls
         private void ClearWebCookie_Click(object sender, RoutedEventArgs e)
         {
             Growl.Clear();
-            Growl.Success("WebView 仿佛没有留下任何数据");
+            Growl.Warning("接下来会进行很多次的删除操作\n如果出现闪退是因为线程卡死了");
+            if (Directory.Exists(Environment.CurrentDirectory + "\\XFP.Impact_Ultimate.exe.WebView2"))
+            {
+                new Thread(() =>
+                {
+                    try
+                    {
+                        ClearWebView2(Environment.CurrentDirectory + "\\XFP.Impact_Ultimate.exe.WebView2");
+                    }
+                    catch
+                    {
+                        ClearWebView2(Environment.CurrentDirectory + "\\XFP.Impact_Ultimate.exe.WebView2");
+                    }
+                    Directory.Delete(Environment.CurrentDirectory + "\\XFP.Impact_Ultimate.exe.WebView2");
+                    Growl.Clear();
+                    Growl.Success("清理完成");
+                }).Start();
+            }
+            else
+            {
+                Growl.Clear();
+                Growl.Success("WebView 仿佛没有留下任何数据");
+            }
+        }
+
+        private void ClearWebView2(string path)
+        {
+            try
+            {
+                DirectoryInfo info = new(path);
+                var filesinfo = info.GetFileSystemInfos();
+                foreach (var file in filesinfo)
+                {
+                    if (file is DirectoryInfo)
+                    {
+                        ClearWebView2(file.FullName);
+                        Directory.Delete(file.FullName);
+                    }
+                    else
+                    {
+                        File.Delete(file.FullName);
+                    }
+                }
+            }
+            catch { return; }
         }
 
         /// <summary>
@@ -269,7 +314,7 @@ namespace XFP.Impact_Ultimate.Controls
         /// <param name="e"></param>
         private void CheckVersionData_Click(object sender, RoutedEventArgs e)
             => HandyControl.Controls.MessageBox.Show(
-                    "当前版本：" + data.Version + "\n版本类型：" + data.ModeVersion + "\nICoraOne-TimeID：" + GenerateId() + "\n" +
+                    "当前版本：" + data.Version + "\n版本类型：" + data.ModeVersion + "\n数据验证密钥：" + GenerateId() + "\n" +
                     "数据库连接状态: " + IsCanConnect() + "\n\nCopyright(C) XFP Group 2022-2023"
                     , "ICora V" + data.Version,
                     MessageBoxButton.YesNo, MessageBoxImage.Information);

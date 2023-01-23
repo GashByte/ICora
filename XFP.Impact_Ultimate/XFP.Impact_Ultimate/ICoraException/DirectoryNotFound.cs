@@ -23,7 +23,7 @@ namespace XFP.Impact_Ultimate.ICoraException
         /// </summary>
         /// <param name="DirectoryName">Directory name that does not exist</param>
         /// <param name="CreateDirectory">Selectively create the current directory</param>
-        public DirectoryNotFound(string DirectoryName, bool CreateDirectory) 
+        public DirectoryNotFound(string DirectoryName, bool CreateDirectory)
         {
             Growl.Warning("Throw Exception: Directory Not Found\n Directory Name:" + DirectoryName);
             if (CreateDirectory == true)

@@ -8,8 +8,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using XFP.Impact_Ultimate.ICoraException;
-using XFP.Impact_Ultimate.Utlis;
-using XFP.Impact_Ultimate.Utlis.Log;
+using XFP.Impact_Ultimate.Utils;
+using XFP.Impact_Ultimate.Utils.Log;
 
 namespace XFP.Impact_Ultimate.Controls.Game.Utils
 {
@@ -21,6 +21,7 @@ namespace XFP.Impact_Ultimate.Controls.Game.Utils
         #region 库文件
         private string[] GlobalFiles = new string[]
         {
+            "Audio_Chinese_pkg_version",
             "GenshinImpact.exe",
             "HoYoKProtect.sys",
             "mhypbase.dll",
@@ -68,13 +69,12 @@ namespace XFP.Impact_Ultimate.Controls.Game.Utils
             "GenshinImpact_Data/Plugins/zf_cef.dll",
             "GenshinImpact_Data/StreamingAssets/20527480.blk",
             "GenshinImpact_Data/Managed/Metadata/global-metadata.dat",
-            "GenshinImpact_Data/SDKCaches/telemetry/Preferences",
-            "GenshinImpact_Data/SDKCaches/telemetry/TelemetryServiceplat_explog_sdk_v2.db",
             "GenshinImpact_Data/Native/Data/Metadata/global-metadata.dat",
         };
 
         private string[] ChineseFiles = new string[]
         {
+            "Audio_Chinese_pkg_version",
             "HoYoKProtect.sys",
             "mhypbase.dll",
             "pkg_version",
@@ -122,9 +122,7 @@ namespace XFP.Impact_Ultimate.Controls.Game.Utils
             "YuanShen_Data/Plugins/zf_cef.dll",
             "YuanShen_Data/StreamingAssets/20527480.blk",
             "YuanShen_Data/Managed/Metadata/global-metadata.dat",
-            "YuanShen_Data/SDKCaches/telemetry/Preferences",
-            "YuanShen_Data/SDKCaches/telemetry/TelemetryServiceplat_explog_sdk_v2.db",
-            "YuanShen_Data/Native/Data/Metadata/global-metadata.dat",
+            "/YuanShen_Data/Native/Data/Metadata/global-metadata.dat",
         };
         #endregion
 
@@ -162,8 +160,8 @@ namespace XFP.Impact_Ultimate.Controls.Game.Utils
         /// <returns></returns>
         public async Task CronvertFilesAsync(IService Service)
         {
-            string GlobalFilePath = GenshinServiceDir + "\\Replace_file_v3.3.0.zip";
-            string CNFilePath = GenshinServiceDir + "\\Initial_file_v3.3.0.zip";
+            string GlobalFilePath = GenshinServiceDir + "\\Replace_file_v3.4.0.zip";
+            string CNFilePath = GenshinServiceDir + "\\Initial_file_v3.4.0.zip";
 
             // decide the Serivce arguments
             string GenshinMain = string.Empty;
@@ -244,7 +242,7 @@ namespace XFP.Impact_Ultimate.Controls.Game.Utils
                             // Paste the files in the package
                             new FastZip().ExtractZip(GlobalFilePath, GenshinDir, "");
                             Growl.Clear();
-                            Growl.Success("转换成功！当前服务器：国际服 | Global");
+                            Growl.Success("转换成功！当前服务器：国际服 | Global\n国际服缺少了许多内容的支持");
                             key.sk("Genshin Impact Path", GenshinDir + @"\GenshinImpact.exe");
                         }
                         else
@@ -252,7 +250,7 @@ namespace XFP.Impact_Ultimate.Controls.Game.Utils
                             Directory.Move(GenshinDir + "\\GenshinImpact_Data", GenshinDir + "\\YuanShen_Data");
 
                             // Paste the files in the package
-                            new FastZip().ExtractZip(CNFilePath, GenshinDir ,"");
+                            new FastZip().ExtractZip(CNFilePath, GenshinDir, "");
                             Growl.Clear();
                             Growl.Success("转换成功！当前服务器：官方服 | 天空岛\n如果需要切换世界树 请再次切换");
                             key.sk("Genshin Impact Path", GenshinDir + @"\YuanShen.exe");

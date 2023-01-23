@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 
-namespace XFP.Impact_Ultimate.Utlis.Log
+namespace XFP.Impact_Ultimate.Utils.Log
 {
     public class LogWriter
     {
@@ -13,7 +13,7 @@ namespace XFP.Impact_Ultimate.Utlis.Log
         public void ErrorLog(string ErrorMessage, int returnCode, string Solution)
         {
             var LogPath = data.ErrorLog;
-            try 
+            try
             {
                 using (StreamWriter sw = new StreamWriter(LogPath, true))
                 {
@@ -31,7 +31,7 @@ namespace XFP.Impact_Ultimate.Utlis.Log
                     sw.WriteLine("##################### Error Log #####################");
                 }
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 ErrorLog(ex.Message, -1, "这是未知的问题");
             }

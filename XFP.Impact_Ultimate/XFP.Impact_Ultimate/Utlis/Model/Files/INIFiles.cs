@@ -3,7 +3,7 @@
 
 using System.IO;
 
-namespace XFP.Impact_Ultimate.Utlis.Model.Files
+namespace XFP.Impact_Ultimate.Utils.Model.Files
 {
     public class INIFiles
     {

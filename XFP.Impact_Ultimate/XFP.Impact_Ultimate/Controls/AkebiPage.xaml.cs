@@ -17,12 +17,11 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using UI;
 using XFP.Impact_Ultimate.Controls.Game.Utils;
 using XFP.Impact_Ultimate.Utils;
-using XFP.Impact_Ultimate.Utlis;
-using XFP.Impact_Ultimate.Utlis.Log;
-using XFP.Impact_Ultimate.Utlis.Model.Files;
-using ZdfFlatUI;
+using XFP.Impact_Ultimate.Utils.Log;
+using XFP.Impact_Ultimate.Utils.Model.Files;
 using MessageBox = HandyControl.Controls.MessageBox;
 
 namespace XFP.Impact_Ultimate.Controls
@@ -75,7 +74,7 @@ namespace XFP.Impact_Ultimate.Controls
             #region 文件夹判断
             if (!Directory.Exists(AkebiPath))
                 Directory.CreateDirectory(AkebiPath);
-            if(!Directory.Exists(UserData))
+            if (!Directory.Exists(UserData))
                 Directory.CreateDirectory(UserData);
             #endregion
             // 服务器选择的List
@@ -83,7 +82,7 @@ namespace XFP.Impact_Ultimate.Controls
             {
                 "官方服 | 天空岛",
                 "渠道服 | 世界树",
-                "国际服 | Global" 
+                "国际服 | Global"
             };
 
             if (!Directory.Exists(AkebiPath))
@@ -100,6 +99,15 @@ namespace XFP.Impact_Ultimate.Controls
             {
                 #region 读取配置文件
                 UGenshinImpactPath.Text = key.gk("Genshin Impact Path") == string.Empty ? "没有找到你的原神" : key.gk("Genshin Impact Path");
+                UChooseDll.Text = key.gk("UChooseDll") == string.Empty ? "默认路径" : key.gk("UChooseDll");
+                if (UGenshinImpactPath.Text == string.Empty)
+                {
+                    UGenshinImpactPath.Text = "没有找到你的原神路径";
+                }
+                if (UChooseDll.Text == string.Empty)
+                {
+                    UChooseDll.Text = "默认路径";
+                }
                 UScreenWidth.Text = key.gk("Screen Width");
                 UScreenHeight.Text = key.gk("Screen Height");
                 UChooseAccount.SelectedItem = key.gk("Account");
@@ -109,11 +117,15 @@ namespace XFP.Impact_Ultimate.Controls
                 {
                     UGameStartModel.Text = "注入DLL";
                     UStartModel.Content = "注入DLL";
+                    UChooseDllPath.IsEnabled = true;
+                    UChooseDll.Opacity = 1;
                 }
                 else
                 {
                     UGameStartModel.Text = "默认模式";
                     UStartModel.Content = "默认模式";
+                    UChooseDllPath.IsEnabled = false;
+                    UChooseDll.Opacity = 0.5;
                 }
 
                 if (key.gk("Mult Start") == "True")
@@ -236,7 +248,8 @@ namespace XFP.Impact_Ultimate.Controls
         /// </summary>
         public void StartGame()
         {
-            try {
+            try
+            {
                 if (string.IsNullOrEmpty(UGenshinImpactPath.Text))
                 {
                     Growl.Clear();
@@ -259,7 +272,7 @@ namespace XFP.Impact_Ultimate.Controls
                         {
                             Growl.Clear();
                             Growl.Warning("提权失败 正常启动");
-                            StartGameNomal();
+                            StartGameNormal();
                             return;
                         }
                         var pExporer = Process.GetProcessesByName("explorer")[0];
@@ -267,7 +280,7 @@ namespace XFP.Impact_Ultimate.Controls
                         {
                             Growl.Clear();
                             Growl.Warning("Explorer未找到 正常启动");
-                            StartGameNomal();
+                            StartGameNormal();
                             return;
                         }
                         IntPtr handle = DllUtils.OpenProcess(0xF0000 | 0x100000 | 0xFFFF, false, (uint)pExporer.Id);
@@ -275,7 +288,7 @@ namespace XFP.Impact_Ultimate.Controls
                         DllUtils.InitializeProcThreadAttributeList(IntPtr.Zero, 1, 0, ref lpSize);
                         si.lpAttributeList = Marshal.AllocHGlobal(lpSize);
                         DllUtils.InitializeProcThreadAttributeList(si.lpAttributeList, 1, 0, ref lpSize);
-                        if (DllUtils.UpdateProcThreadAttribute(si.lpAttributeList, 0, (IntPtr)0x00020004, handle, (IntPtr)IntPtr.Size, IntPtr.Zero, IntPtr.Zero))
+                        if (DllUtils.UpdateProcThreadAttribute(si.lpAttributeList, 0, 0x00020004, handle, IntPtr.Size, IntPtr.Zero, IntPtr.Zero))
                         {
                             Growl.Clear();
                             Growl.Error("更新线程失败");
@@ -300,7 +313,6 @@ namespace XFP.Impact_Ultimate.Controls
                             .Append("-screen-height", UScreenHeight.Text.ToString())
                             .Append("-screen-width", UScreenWidth.Text.ToString())
                             .ToString();
-
                         var result = DllUtils.CreateProcessAsUser(hToken, Path.Combine(UGenshinImpactPath.Text).ToString(),
                             RunParameters.Text == string.Empty ? args : RunParameters.Text, IntPtr.Zero, IntPtr.Zero, false, 0x00080000 | 0x00000004,
                             IntPtr.Zero, Path.Combine(path.Parent.Parent.FullName, "Genshin Impact Game").ToString(), ref si.StartupInfo, out pi);
@@ -308,7 +320,7 @@ namespace XFP.Impact_Ultimate.Controls
                         {
                             Growl.Clear();
                             Growl.Warning("启动暂停线程失败 正常启动");
-                            StartGameNomal();
+                            StartGameNormal();
                             return;
                         }
                         DllUtils.DeleteProcThreadAttributeList(si.lpAttributeList);
@@ -320,7 +332,7 @@ namespace XFP.Impact_Ultimate.Controls
                             DllUtils.CloseHandle(pi.hProcess);
                         }).Start();
                         Growl.Clear();
-                        Growl.Success("启动成功 祝你游玩愉快！");
+                        Growl.Success("启动成功 祝你游玩愉快！\nDll注入暂时不支持统计游玩时间 我找不到方法统计它");
                     }
                     catch
                     {
@@ -328,11 +340,100 @@ namespace XFP.Impact_Ultimate.Controls
                     }
                 }
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 Growl.Clear();
                 Growl.Error("在启动发现了异常：" + ex.Message);
             }
+        }
+
+        /// <summary>
+        /// 正常启动游戏
+        /// </summary>
+        private void StartGameNormal()
+        {
+            Stopwatch sw = new();
+            string args = "";
+            ProcessStartInfo startInfo = new();
+            startInfo.UseShellExecute = true;
+            startInfo.WorkingDirectory = Environment.CurrentDirectory;
+            startInfo.FileName = Path.Combine(UGenshinImpactPath.Text);
+            startInfo.Verb = "RunAs";
+            if (key.gk("Is Full Screen") == "False"
+                && key.gk("Border less") == "False")
+            {
+                args = new CommandLineBuilder()
+                    .Append("-screen-height", UScreenHeight.Text.ToString())
+                    .Append("-screen-width", UScreenWidth.Text.ToString())
+                    .ToString();
+                startInfo.Arguments = RunParameters.Text + args;
+            }
+            else
+            {
+                if (key.gk("Is Full Screen") == "True")
+                {
+                    args += new CommandLineBuilder()
+                        .AppendIf("-screen-fullscreen", true)
+                        .ToString();
+                }
+                if (key.gk("Border less") == "True")
+                {
+                    args += new CommandLineBuilder()
+                        .AppendIf("-popupwindow", true)
+                        .ToString();
+                }
+                args += new CommandLineBuilder()
+                    .Append("-screen-height", UScreenHeight.Text.ToString())
+                    .Append("-screen-width", UScreenWidth.Text.ToString())
+                    .ToString();
+                startInfo.Arguments = args;
+            }
+
+            new Thread(() =>
+            {
+                sw.Start();
+                Process GenshinProc = Process.Start(startInfo);
+
+                GenshinProc.EnableRaisingEvents = true;
+                GenshinProc.Exited += (sender, e) =>
+                {
+                    sw.Stop();
+                    TimeSpan ts = sw.Elapsed;
+                    Growl.Clear();
+                    Growl.Success($"游戏结束了 您游玩了: {ts.Hours}小时," +
+                        $" {ts.Minutes}分钟, {ts.Seconds}秒\n希望它是一段美妙的路途");
+
+                };
+            }).Start();
+        }
+
+        /// <summary>
+        /// 使用Exe启动游戏
+        /// </summary>
+        private void StartGameFormExe()
+        {
+            Stopwatch sw = new();
+            ProcessStartInfo startInfo = new();
+            startInfo.UseShellExecute = true;
+            startInfo.WorkingDirectory = Environment.CurrentDirectory;
+            startInfo.FileName = Path.Combine(UChooseDll.Text);
+            startInfo.Verb = "runas";
+            new Thread(() =>
+            {
+                sw.Start();
+                Process GenshinProc = Process.Start(startInfo);
+
+                GenshinProc.EnableRaisingEvents = true;
+                GenshinProc.Exited += (sender, e) =>
+                {
+                    sw.Stop();
+                    TimeSpan ts = sw.Elapsed;
+                    Growl.Clear();
+                    Growl.Success($"游戏结束了 您游玩了: {ts.Hours}小时," +
+                        $" {ts.Minutes}分钟, {ts.Seconds}秒\n希望它是一段美妙的路途");
+
+                };
+            }).Start();
         }
 
         /// <summary>
@@ -406,6 +507,12 @@ namespace XFP.Impact_Ultimate.Controls
         /// </summary>
         private void CLDownloader(bool UseCLDownloader)
         {
+            if (UChooseDll.Text != "默认路径")
+            {
+                Growl.Clear();
+                Growl.Warning("暂时无法获取你的Dll信息");
+                return;
+            }
             if (UseCLDownloader)
             {
                 var localpath = Environment.CurrentDirectory;
@@ -454,65 +561,6 @@ namespace XFP.Impact_Ultimate.Controls
             }
         }
 
-        /// <summary>
-        /// 正常启动游戏
-        /// </summary>
-        private void StartGameNomal()
-        {
-            Stopwatch sw = new();
-            string args = "";
-            ProcessStartInfo startInfo = new();
-            startInfo.UseShellExecute = true;
-            startInfo.WorkingDirectory = Environment.CurrentDirectory;
-            startInfo.FileName = Path.Combine(UGenshinImpactPath.Text);
-            startInfo.Verb = "RunAs";
-            if (key.gk("Is Full Screen") == "False"
-                && key.gk("Border less") == "False")
-            {
-                args = new CommandLineBuilder()
-                    .Append("-screen-height", UScreenHeight.Text.ToString())
-                    .Append("-screen-width", UScreenWidth.Text.ToString())
-                    .ToString();
-                startInfo.Arguments = RunParameters.Text + args;
-            }
-            else
-            {
-                if (key.gk("Is Full Screen") == "True")
-                {
-                    args += new CommandLineBuilder()
-                        .AppendIf("-screen-fullscreen", true)
-                        .ToString();
-                }
-                if (key.gk("Border less") == "True")
-                {
-                    args += new CommandLineBuilder()
-                        .AppendIf("-popupwindow", true)
-                        .ToString();
-                }
-                args += new CommandLineBuilder()
-                    .Append("-screen-height", UScreenHeight.Text.ToString())
-                    .Append("-screen-width", UScreenWidth.Text.ToString())
-                    .ToString();
-                startInfo.Arguments = args;
-            }
-
-            new Thread(() => 
-            {
-                sw.Start();
-                Process GenshinProc = Process.Start(startInfo);
-
-                GenshinProc.EnableRaisingEvents = true;
-                GenshinProc.Exited += (sender, e) =>
-                {
-                    sw.Stop();
-                    TimeSpan ts = sw.Elapsed;
-                    Growl.Clear();
-                    Growl.Success($"游戏结束了 您游玩了: {ts.Hours}小时," +
-                        $" {ts.Minutes}分钟, {ts.Seconds}秒\n希望它是一段每秒的路途");
-                };
-            }).Start();
-        }
-
         #endregion
 
         #region Controls Method
@@ -547,10 +595,14 @@ namespace XFP.Impact_Ultimate.Controls
             if (UStartModel.Content.ToString() == "默认模式")
             {
                 UStartModel.Content = "注入DLL";
+                UChooseDllPath.IsEnabled = true;
+                UChooseDll.Opacity = 1;
             }
             else
             {
                 UStartModel.Content = "默认模式";
+                UChooseDllPath.IsEnabled = false;
+                UChooseDll.Opacity = 0.5;
             }
             UGameStartModel.Text = UStartModel.Content.ToString();
             key.sk("Start Game Model", UGameStartModel.Text);
@@ -586,7 +638,7 @@ namespace XFP.Impact_Ultimate.Controls
         /// <param name="e"></param>
         private void AccountName_KeyUp(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Escape) 
+            if (e.Key == Key.Escape)
             {
                 AccountName.Visibility = Visibility.Hidden;
                 AccountName.Text = string.Empty;
@@ -606,7 +658,7 @@ namespace XFP.Impact_Ultimate.Controls
                 Growl.Warning("请输入账户名称");
                 return;
             }
-            if (e.Key == System.Windows.Input.Key.Enter)
+            if (e.Key == Key.Enter)
             {
                 try
                 {
@@ -626,6 +678,8 @@ namespace XFP.Impact_Ultimate.Controls
                     AccountName.Visibility = Visibility.Hidden;
                     AccountName.Text = string.Empty;
                     InAdd = false;
+
+                    RefreshList();
 
                     Growl.Clear();
                     Growl.Success($"添加成功 账户{AccountName.Text}");
@@ -717,7 +771,7 @@ namespace XFP.Impact_Ultimate.Controls
                     return;
                 }
             }
-            
+
         }
 
         /// <summary>
@@ -725,9 +779,9 @@ namespace XFP.Impact_Ultimate.Controls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ModifAccountName_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        private void ModifAccountName_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == System.Windows.Input.Key.Escape)
+            if (e.Key == Key.Escape)
             {
                 ModifAccountName.Text = string.Empty;
                 ModifAccountName.Visibility = Visibility.Hidden;
@@ -747,7 +801,7 @@ namespace XFP.Impact_Ultimate.Controls
                 Growl.Warning("请输入账户名称");
                 return;
             }
-            if (e.Key == System.Windows.Input.Key.Enter)
+            if (e.Key == Key.Enter)
             {
                 try
                 {
@@ -780,66 +834,152 @@ namespace XFP.Impact_Ultimate.Controls
         /// <param name="e"></param>
         private void StartGameButton_Click(object sender, RoutedEventArgs e)
         {
-            if (UGameStartModel.Text == "默认模式")
+            try
             {
-                StartGameNomal();
-                Growl.Clear();
-                Growl.Success("启动成功 祝你游玩愉快！");
-            }
-            else if (UGameStartModel.Text == "注入DLL")
-            {
-                try
+                if (!File.Exists(UGenshinImpactPath.Text))
                 {
-                    if (File.Exists(CLPath))
+                    Growl.Clear();
+                    Growl.Error("没有找到你的原神 已经帮你打开启动器修复！");
+
+                    DirectoryInfo info = new DirectoryInfo(UGenshinImpactPath.Text);
+                    var LauncherPath = info.Parent.Parent.FullName;
+                    if (File.Exists(LauncherPath + "\\launcher.exe"))
                     {
-                        if (CheckCL.Content == "启用")
+                        Process.Start(LauncherPath + "\\launcher.exe");
+                        return;
+                    }
+                    Growl.Error("没有找到你的启动器");
+                    return;
+                }
+                if (UGameStartModel.Text == "默认模式")
+                {
+                    StartGameNormal();
+                    Growl.Clear();
+                    Growl.Success("启动成功 祝你游玩愉快！");
+                }
+                else if (UGameStartModel.Text == "注入DLL")
+                {
+                    if (UGameService.Text == "国际服 | Global")
+                    {
+                        Growl.Clear();
+                        Growl.Warning("由于支持方问题 ICora暂时不支持国际服Dll注入 望理解！\n游戏已正常启动");
+                        StartGameNormal();
+                        return;
+                    }
+
+                    string UPath = Environment.CurrentDirectory;
+                    Regex regex = new Regex("[\u4e00-\u9fa5]+");
+                    if (regex.IsMatch(UPath))
+                    {
+                        Growl.Clear();
+                        Growl.Error($"我们发现了你的路径含有中文或非法字符 请你删除它后再试");
+                        return;
+                    }
+
+                    if (UChooseDll.Text != "默认路径")
+                    {
+                        FileInfo UserChoosePath = new(UChooseDll.Text);
+                        Regex r = new Regex("\\.(.*)$");
+                        Match match = r.Match(UserChoosePath.Name);
+                        if (match.Success)
                         {
-                            StartGame();
-                            return;
-                        }
-                        // CL大小校验
-                        FileInfo fileInfo = new FileInfo(CLPath);
-                        long localsize = fileInfo.Length;
-                        HttpWebRequest request = (HttpWebRequest)
-                            WebRequest.Create("https://gitee.com/MasterGashByte/download/releases/download/CLibrary/CLibrary.dll");
-                        HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-                        if (localsize != response.ContentLength)
-                        {
-                            if (ZMessageBox.Show(
-                                System.Windows.Window.GetWindow(this),
-                                "您的Dll大小不正确 这也许是服务器返回了不正确的大小 是否要尝试启动？选择否则下载服务器中的Dll"
-                                , "", MessageBoxButton.YesNoCancel, EnumPromptType.Error) == MessageBoxResult.Yes)
+                            string content = match.Groups[1].Value;
+                            if (content == "exe"
+                                || content == "lnk")
                             {
-                                Growl.Clear();
-                                Growl.Warning("如果启动失败(原神未启动)则是Dll不正确导致的\n您可以下载服务器中的Dll或者下载群中的Akebi 然后手动导入Dll\n" +
-                                    "您若需要手动导入Dll 需要将Dll放置到下面这个文件夹：\n" + AkebiPath);
+                                if (File.Exists(UChooseDll.Text))
+                                {
+                                    StartGameFormExe();
+                                    Growl.Clear();
+                                    Growl.Success("Game Started! Happy Hacking!");
+                                    return;
+                                }
+                                else
+                                {
+                                    Growl.Clear();
+                                    Growl.Error("没有找到你的文件");
+                                    return;
+                                }
+                            }
+                            if (content == "dll")
+                            {
+                                if (File.Exists(UChooseDll.Text))
+                                {
+                                    CLPath = UChooseDll.Text;
+                                    StartGame();
+                                    return;
+                                }
+                                else
+                                {
+                                    Growl.Clear();
+                                    Growl.Error("没有找到你的文件");
+                                    return;
+                                }
+                            }
+                        }
+                        Growl.Clear();
+                        Growl.Error("未知问题");
+                        return;
+                    }
+                    try
+                    {
+
+                        if (File.Exists(CLPath))
+                        {
+                            if (CheckCL.Content == "启用")
+                            {
                                 StartGame();
+                                return;
+                            }
+                            // CL大小校验
+                            FileInfo fileInfo = new FileInfo(CLPath);
+                            long localsize = fileInfo.Length;
+                            HttpWebRequest request = (HttpWebRequest)
+                                WebRequest.Create("https://gitee.com/MasterGashByte/download/releases/download/CLibrary/CLibrary.dll");
+                            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                            if (localsize != response.ContentLength)
+                            {
+                                if (ZMessageBox.Show(
+                                    System.Windows.Window.GetWindow(this),
+                                    "您的Dll大小不正确 这也许是服务器返回了不正确的大小 是否要尝试启动？选择否则下载服务器中的Dll"
+                                    , "", MessageBoxButton.YesNoCancel, EnumPromptType.Error) == MessageBoxResult.Yes)
+                                {
+                                    Growl.Clear();
+                                    Growl.Warning("如果启动失败(原神未启动)则是Dll不正确导致的\n您可以下载服务器中的Dll或者下载群中的Akebi 然后手动导入Dll\n" +
+                                        "您若需要手动导入Dll 需要将Dll放置到下面这个文件夹：\n" + AkebiPath);
+                                    StartGame();
+                                }
+                                else
+                                {
+                                    Growl.Clear();
+                                    Growl.Info("正在下载\n什么？没有反应 下拉开始按钮 点击下载Clibrary");
+                                    File.Delete(CLPath);
+                                    CLDownloader(true);
+                                }
                             }
                             else
                             {
-                                Growl.Clear();
-                                Growl.Info("正在下载\n什么？没有反应 下拉开始按钮 点击下载Clibrary");
-                                File.Delete(CLPath);
-                                CLDownloader(true);
+                                StartGame();
                             }
                         }
                         else
                         {
-                            StartGame();
+                            Growl.Clear();
+                            Growl.Error("您的CLibrary不存在 正在为您下载");
+                            CLDownloader(true);
                         }
                     }
-                    else
+                    catch (UnauthorizedAccessException)
                     {
                         Growl.Clear();
-                        Growl.Error("您的CLibrary不存在 正在为您下载");
-                        CLDownloader(true);
+                        Growl.Warning("请以管理员模式打开ICora后再试");
                     }
                 }
-                catch (UnauthorizedAccessException)
-                {
-                    Growl.Clear();
-                    Growl.Warning("请以管理员模式打开ICora后再试");
-                }
+            }
+            catch (Exception ex)
+            {
+                Growl.Clear();
+                Growl.Error(ex.Message);
             }
         }
 
@@ -882,6 +1022,150 @@ namespace XFP.Impact_Ultimate.Controls
                     Growl.Error($"出现异常：{ex.Message}");
                     log.ErrorLog(ex.Message, -1);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 服务器选择
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UChooseService_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.RemovedItems.Count > 0)
+            {
+                if ("当前服务器：" + UChooseService.SelectedItem == UGameService.Text)
+                {
+                    return;
+                }
+                try
+                {
+                    if (!Directory.Exists(GenshinServiceDir))
+                    {
+                        Growl.Clear();
+                        Growl.Error("没有找到转服包资源 请前往群中连接下载\n下载后请保存至\n"
+                            + Environment.CurrentDirectory + "\\GenshinService文件夹 \n已经为您打开");
+                        Directory.CreateDirectory(GenshinServiceDir);
+                        Process.Start("explorer.exe", Environment.CurrentDirectory + "\\GenshinService");
+                        return;
+                    }
+                    #region 写入配置
+                    DirectoryInfo info = new DirectoryInfo(UGenshinImpactPath.Text);
+                    string YuanShenDir = info.Parent.FullName;
+                    string configPath = YuanShenDir + "\\config.ini";
+                    if (UChooseService.SelectedItem == "官方服 | 天空岛")
+                    {
+                        if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
+                            , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
+                        {
+                            if (UGameService.Text == "当前服务器：国际服 | Global")
+                            {
+                                if (File.Exists(Environment.CurrentDirectory + "\\GenshinService\\Initial_file_v3.4.0.zip"))
+                                {
+                                    GameConverter game = new();
+                                    game.Converter();
+                                }
+                                else
+                                {
+                                    Growl.Clear();
+                                    Growl.Error("没有找到游戏转服资源包 请前往下载");
+                                    return;
+                                }
+                            }
+
+                            UGenshinImpactPath.Text = YuanShenDir + "\\YuanShen.exe";
+                            ini.INIWrite("General", "channel", "1", configPath);
+                            ini.INIWrite("General", "cps", "mihoyo", configPath);
+                        }
+                    }
+                    if (UChooseService.SelectedItem == "国际服 | Global")
+                    {
+                        if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
+                            , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
+                        {
+                            if (File.Exists(Environment.CurrentDirectory + "\\GenshinService\\Replace_file_v3.4.0.zip"))
+                            {
+                                GameConverter game = new();
+                                game.Converter();
+                            }
+                            else
+                            {
+                                Growl.Clear();
+                                Growl.Error("没有找到游戏转服资源包 请前往下载");
+                                return;
+                            }
+
+                            ini.INIWrite("General", "channel", "1", configPath);
+                            ini.INIWrite("General", "cps", "mihoyo", configPath);
+                            UGenshinImpactPath.Text = YuanShenDir + "\\GenshinImpact.exe";
+                        }
+                    }
+                    if (UChooseService.SelectedItem == "渠道服 | 世界树")
+                    {
+                        if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
+                            , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
+                        {
+                            ini.INIWrite("General", "channel", "14", configPath);
+                            ini.INIWrite("General", "cps", "bilibili", configPath);
+                            UGenshinImpactPath.Text = YuanShenDir + "\\YuanShen.exe";
+                            if (UGameService.Text == "当前服务器：国际服 | Global")
+                            {
+                                if (File.Exists(Environment.CurrentDirectory + "\\GenshinService\\Initial_file_v3.4.0.zip"))
+                                {
+                                    GameConverter game = new();
+                                    game.Converter();
+                                }
+                                else
+                                {
+                                    Growl.Clear();
+                                    Growl.Error("没有找到游戏转服资源包 请前往下载");
+                                    return;
+                                }
+                            }
+                            Growl.Clear();
+                            Growl.Success("转服成功 当前服务器：渠道服 | 世界树\n若出现无法进入 还是官方服的问题 请反馈");
+                        }
+                    }
+                    UGameService.Text = "当前服务器：" + UChooseService.SelectedItem;
+                    #endregion
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    Growl.Clear();
+                    Growl.Warning("找不到游戏配置文件 config.ini");
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Growl.Clear();
+                    Growl.Warning("无法读取或保存配置文件 请以管理员模式重启ICora然后重试");
+                    Growl.Info("服务器未切换 当前服务器：" + UGameService.Text);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 选择Dll位置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UChooseDllPath_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new Microsoft.Win32.OpenFileDialog()
+            {
+                // 文件后缀
+                Filter = "(*.exe or *.dll or *.lnk) | *.exe;*.dll;*.lnk"
+            };
+            var result = openFileDialog.ShowDialog();
+            if (result == true)
+            {
+                if (openFileDialog.FileName == CLPath)
+                {
+                    UChooseDll.Text = "默认路径";
+                    key.sk("UChooseDll", "默认路径");
+                    return;
+                }
+                UChooseDll.Text = openFileDialog.FileName;
+                key.sk("UChooseDll", UChooseDll.Text);
             }
         }
 
@@ -1028,97 +1312,6 @@ namespace XFP.Impact_Ultimate.Controls
         }
 
         #endregion
-
-        /// <summary>
-        /// 服务器选择
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void UChooseService_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.RemovedItems.Count > 0)
-            {
-                if ("当前服务器：" + UChooseService.SelectedItem == UGameService.Text)
-                {
-                    return;
-                }
-                try
-                {
-                    if (!Directory.Exists(GenshinServiceDir))
-                    {
-                        Growl.Clear();
-                        Growl.Error("没有找到转服包资源 请前往群中连接下载\n下载后请保存至\n"
-                            + Environment.CurrentDirectory + "\\GenshinService文件夹 \n已经为您打开");
-                        Directory.CreateDirectory(GenshinServiceDir);
-                        Process.Start("explorer.exe", Environment.CurrentDirectory + "\\GenshinService");
-                        return;
-                    }
-                    #region 写入配置
-                    DirectoryInfo info = new DirectoryInfo(UGenshinImpactPath.Text);
-                    string YuanShenDir = info.Parent.FullName;
-                    string configPath = YuanShenDir + "\\config.ini";
-                    if (UChooseService.SelectedItem == "官方服 | 天空岛")
-                    {
-                        if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
-                            , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
-                        {
-                            if (UGameService.Text == "当前服务器：国际服 | Global")
-                            {
-                                GameConverter game = new();
-                                game.Converter();
-                            }
-
-                            UGenshinImpactPath.Text = YuanShenDir + "\\YuanShen.exe";
-                            ini.INIWrite("General", "channel", "1", configPath);
-                            ini.INIWrite("General", "cps", "mihoyo", configPath);
-                        }
-                    }
-                    if (UChooseService.SelectedItem == "国际服 | Global")
-                    {
-                        if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
-                            , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
-                        {
-                            GameConverter game = new();
-                            game.Converter();
-
-                            ini.INIWrite("General", "channel", "1", configPath);
-                            ini.INIWrite("General", "cps", "mihoyo", configPath);
-                            UGenshinImpactPath.Text = YuanShenDir + "\\GenshinImpact.exe";
-                        }
-                    }
-                    if (UChooseService.SelectedItem == "渠道服 | 世界树")
-                    {
-                        if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
-                            , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
-                        {
-                            ini.INIWrite("General", "channel", "14", configPath);
-                            ini.INIWrite("General", "cps", "bilibili", configPath);
-                            UGenshinImpactPath.Text = YuanShenDir + "\\YuanShen.exe";
-                            if (UGameService.Text == "当前服务器：国际服 | Global")
-                            {
-                                GameConverter game = new();
-                                game.Converter();
-                            }
-                            Growl.Clear();
-                            Growl.Success("转服成功 当前服务器：渠道服 | 世界树\n若出现无法进入 还是官方服的问题 请反馈");
-                        }
-                    }
-                    UGameService.Text = "当前服务器：" + UChooseService.SelectedItem;
-                    #endregion
-                }
-                catch (DirectoryNotFoundException)
-                {
-                    Growl.Clear();
-                    Growl.Warning("找不到游戏配置文件 config.ini");
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    Growl.Clear();
-                    Growl.Warning("无法读取或保存配置文件 请以管理员模式重启ICora然后重试");
-                    Growl.Info("服务器未切换 当前服务器：" + UGameService.Text);
-                }
-            }
-        }
 
         #endregion
     }

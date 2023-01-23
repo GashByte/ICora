@@ -7,7 +7,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace XFP.Impact_Ultimate.Utlis
+namespace XFP.Impact_Ultimate.Utils
 {
     [Serializable]
     public class YSAccount

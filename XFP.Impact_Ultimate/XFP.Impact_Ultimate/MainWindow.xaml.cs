@@ -1,19 +1,20 @@
 ﻿//Copyright(c) XFP Group and Contributors. All rights reserved.
 //Licensed under the MIT License. 
 
+using HandyControl.Controls;
+using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Win32;
-using System.IO;
-using XFP.Impact_Ultimate.Model;
-using XFP.Impact_Ultimate.Utlis;
+using UI;
 using XFP.Impact_Ultimate.Controls;
-using ZdfFlatUI;
-using System.Diagnostics;
-using XFP.Impact_Ultimate.Utlis.Log;
-using HandyControl.Controls;
+using XFP.Impact_Ultimate.Model;
+using XFP.Impact_Ultimate.Utils;
+using XFP.Impact_Ultimate.Utils.Log;
 using MessageBox = System.Windows.MessageBox;
 
 /*
@@ -52,10 +53,7 @@ namespace XFP.Impact_Ultimate
             set { _settingsMenu = value; }
         }
 
-        public MainWindow()
-        {
-            Initialization();
-        }
+        public MainWindow() => Initialization();
 
         private void Initialization()
         {
@@ -69,7 +67,7 @@ namespace XFP.Impact_Ultimate
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             // 用于绘制标题栏
-            NonClientAreaContent = new Controls.NonClientAreaContent();
+            NonClientAreaContent = new NonClientAreaContent();
 
             // 实例化
             MenuList = new ObservableCollection<MenuInfo>();
@@ -155,6 +153,11 @@ namespace XFP.Impact_Ultimate
             });
             MenuList.Add(new MenuInfo()
             {
+                Name = "米哈游账户",
+                GroupName = ControlType.关于.ToString(),
+            });
+            MenuList.Add(new MenuInfo()
+            {
                 Name = "论坛",
                 GroupName = ControlType.关于.ToString(),
             });
@@ -174,46 +177,60 @@ namespace XFP.Impact_Ultimate
 
             ControlPanel.Content = new HomePage();
 
-            #region Version Checker
-            var ServerVesion =
-                GetFormUrl.Get("https://gitee.com/MasterGashByte/updates/raw/master/Checker/Version");
-            var version = new DataProvider().Version;
-            if (version != ServerVesion)
-            {
-                var MustUpdate =
-                    GetFormUrl.Get("https://gitee.com/MasterGashByte/updates/raw/master/Checker/MustUpdate");
-                if (MustUpdate == "true")
-                {
-                    MessageBox.Show("这是一个必须更新的版本 正在打开 [更新助手]");
-
-                    var localpath = Environment.CurrentDirectory;
-                    if (File.Exists(localpath + "\\Updater.exe")
-                        && File.Exists(localpath + "\\Updater.deps.json")
-                        && File.Exists(localpath + "\\Updater.dll")
-                        && File.Exists(localpath + "\\Updater.runtimeconfig.json"))
-                    {
-                        Process.Start(localpath + "\\Updater.exe");
-                    }
-                    else
-                    {
-                        MessageBox.Show("您的ICora仿佛不齐全 请前往群中重新下载");
-                        log.ErrorLog("DetectionSystem: ICora is incomplete", -0, "您的ICora不是完整的 您可以前往群中获取完整的ICora");
-                    }
-
-                    Environment.Exit(0);
-                }
-                notifiaction.AddNotifiaction(new NotifiactionModel()
-                {
-                    Title = "有新版本！",
-                    Content = "当前版本：" + data.Version + " 最新版本：" + ServerVesion,
-                    NotifiactionType = EnumPromptType.Info
-                });
-                //UpdateButton.Visibility = Visibility.Visible;
-            }
-            #endregion
-
             menu.SelectionChanged += menu_SelectionChanged;
             SettingsMenu.SelectionChanged += SettingsMenu_SelectionChanged;
+
+            Growl.SuccessGlobal("岁月不居 时节如流 我们再一次迎来了新的一年\n我代表XFP全体团员 在此祝您\n兔年大吉！心想事成！万事如意！财源广进！四季平安！");
+
+            new Thread(() =>
+            {
+                bool _Info = false;
+                var _ServerVesion = string.Empty;
+                while (true)
+                {
+                    var ServerVesion =
+                        GetFormUrl.Get("https://gitee.com/MasterGashByte/updates/raw/master/Checker/Version");
+                    var version = new DataProvider().Version;
+                    if (version != ServerVesion)
+                    {
+                        var MustUpdate =
+                            GetFormUrl.Get("https://gitee.com/MasterGashByte/updates/raw/master/Checker/MustUpdate");
+                        if (MustUpdate == "true")
+                        {
+                            MessageBox.Show("这是一个必须更新的版本 正在打开 [更新助手]");
+
+                            var localpath = Environment.CurrentDirectory;
+                            if (File.Exists(localpath + "\\Updater.exe")
+                                && File.Exists(localpath + "\\Updater.deps.json")
+                                && File.Exists(localpath + "\\Updater.dll")
+                                && File.Exists(localpath + "\\Updater.runtimeconfig.json"))
+                            {
+                                Process.Start(localpath + "\\Updater.exe");
+                            }
+                            else
+                            {
+                                MessageBox.Show("您的ICora仿佛不齐全 请前往群中重新下载");
+                                log.ErrorLog("DetectionSystem: ICora is incomplete", -0, "您的ICora不是完整的 您可以前往群中获取完整的ICora");
+                            }
+
+                            Environment.Exit(0);
+                        }
+
+
+                        if (_ServerVesion != ServerVesion)
+                        {
+                            if (!_Info)
+                            {
+                                Growl.InfoGlobal("有新版本！\n发现新版本啦，快去更新吧~");
+                                _ServerVesion = ServerVesion;
+                                _Info = true;
+                            }
+                        }
+                        _Info = false;
+                    }
+                    Thread.Sleep(1800000);
+                }
+            }).Start();
         }
 
         private void SettingsMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -228,6 +245,7 @@ namespace XFP.Impact_Ultimate
                         ControlPanel.Content = new Controls.Basic.Settings();
                         break;
                     case "登录":
+                        ControlPanel.Content = new Controls.Basic.LoginFormMihoyo();
                         break;
                 }
             }
@@ -252,6 +270,13 @@ namespace XFP.Impact_Ultimate
                         break;
                     case "关于我们":
                         ControlPanel.Content = new AboutUs();
+                        break;
+                    case "祈愿记录":
+                        Growl.Clear();
+                        Growl.Warning("此按钮将在下一个版本开放~我们已经编写完成咯！");
+                        break;
+                    case "米哈游账户":
+                        ControlPanel.Content = new HoyolabAccount();
                         break;
                     default:
                         ControlPanel.Content = new HomePage();

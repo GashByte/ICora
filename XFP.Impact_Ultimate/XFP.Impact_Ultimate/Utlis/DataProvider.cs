@@ -3,9 +3,9 @@
 
 using System;
 using System.IO;
-using XFP.Impact_Ultimate.Utlis.Base;
+using XFP.Impact_Ultimate.Utils.Base;
 
-namespace XFP.Impact_Ultimate.Utlis
+namespace XFP.Impact_Ultimate.Utils
 {
     public class DataProvider
     {
@@ -13,14 +13,15 @@ namespace XFP.Impact_Ultimate.Utlis
 
         #region definition
         #region public:
-        public string Version => "1.3.0";
-        public int ModuleVersion = 2;
+        public string Version => "1.3.10";
         public string DataBasePath = Environment.CurrentDirectory + "\\DataBase";
         public string DataLog = Environment.CurrentDirectory + "\\DataBase\\DataLog.log";
         public string TempLog = Environment.CurrentDirectory + "\\DataBase\\TempLog.log";
         public string ErrorLog = Environment.CurrentDirectory + "\\DataBase\\ErrorLog.log";
         public string SettingsData = Environment.CurrentDirectory + "\\DataBase\\Settings.log";
-        public ModuleVersion ModeVersion = Base.ModuleVersion.BasicEdition;
+        public ModuleVersion ModeVersion = ModuleVersion.DevelopmentEdition;
+        public string HoyolabAccountData = Environment.CurrentDirectory + "\\DataBase\\HoyolabAccountData";
+        public string EncryptKey = "ICORAHASX41HBL42KVGO992MLLAS6DJ0";
         #endregion
 
         #region private:
@@ -76,7 +77,7 @@ namespace XFP.Impact_Ultimate.Utlis
                         sw.WriteLine("#this file will save some user basic log");
                         sw.WriteLine("#If you deleted it, it means you will lose some data");
                         sw.WriteLine();
-                        sw.WriteLine("UserModuleVersion=" + ModuleVersion);
+                        sw.WriteLine("UserModuleVersion=" + ModuleVersion.BasicEdition.ToString());
                         sw.WriteLine("UserVersion=" + Version);
                         sw.WriteLine("_Initialized=true");
                     }

@@ -2,7 +2,7 @@
 //Licensed under the MIT License.   
 
 using HandyControl.Controls;
-using XFP.Impact_Ultimate.Utlis.Log;
+using XFP.Impact_Ultimate.Utils.Log;
 
 namespace XFP.Impact_Ultimate.ICoraException
 {
@@ -14,7 +14,7 @@ namespace XFP.Impact_Ultimate.ICoraException
         /// Unknown user selection
         /// </summary>
         /// <param name="UserChoose"></param>
-        public UnKnownChoose(string UserChoose) 
+        public UnKnownChoose(string UserChoose)
         {
             Growl.Error("Throw Exception Un Known Choose : " + UserChoose);
             log.ErrorLog("Throw Exception Un Known Choose : " + UserChoose, -10);

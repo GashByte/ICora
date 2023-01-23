@@ -5,7 +5,7 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace XFP.Impact_Ultimate.Utlis
+namespace XFP.Impact_Ultimate.Utils
 {
 
     public class PrimaryScreen

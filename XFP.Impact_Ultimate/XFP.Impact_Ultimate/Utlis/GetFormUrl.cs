@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Net;
 
-namespace XFP.Impact_Ultimate.Utlis
+namespace XFP.Impact_Ultimate.Utils
 {
     public class GetFormUrl
     {

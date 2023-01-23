@@ -3,7 +3,7 @@
 
 using Microsoft.Win32;
 
-namespace XFP.Impact_Ultimate.Utlis
+namespace XFP.Impact_Ultimate.Utils
 {
     public class KeySetter
     {

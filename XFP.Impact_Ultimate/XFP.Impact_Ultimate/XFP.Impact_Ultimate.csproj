@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0-windows10.0.18362.0</TargetFramework>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>True</UseWPF>
@@ -11,7 +11,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app1.manifest</ApplicationManifest>
-    <SupportedOSPlatformVersion>10.0.18362.0</SupportedOSPlatformVersion>
     <StartupObject>XFP.Impact_Ultimate.App</StartupObject>
     <PlatformTarget>x64</PlatformTarget>
     <UseWindowsForms>False</UseWindowsForms>
@@ -31,30 +30,7 @@
     <None Remove="BackGround.png" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="CalcBinding">
-      <HintPath>..\..\WPF.UI-master\ZdfFlatUI\DLL\CalcBinding.dll</HintPath>
-    </Reference>
-    <Reference Include="DynamicExpresso.Core">
-      <HintPath>..\..\WPF.UI-master\ZdfFlatUI\DLL\DynamicExpresso.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Expression.Controls">
-      <HintPath>..\..\WPF.UI-master\ZdfFlatUI\DLL\Microsoft.Expression.Controls.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Expression.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\WPF.UI-master\ZdfFlatUI\DLL\Microsoft.Expression.Drawing.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Expression.Effects">
-      <HintPath>..\..\WPF.UI-master\ZdfFlatUI\DLL\Microsoft.Expression.Effects.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Expression.Interactions">
-      <HintPath>..\..\WPF.UI-master\ZdfFlatUI\DLL\Microsoft.Expression.Interactions.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\WPF.UI-master\ZdfFlatUI\ZUI.Core.csproj" />
-    <ProjectReference Include="..\..\WPF.UI-master\ZUI.Common\ZUI.Common.csproj" />
-    <ProjectReference Include="..\..\WPF.UI-master\ZUI.VideoPlayer\ZUI.VideoPlayer.csproj" />
+    <ProjectReference Include="..\..\WPF.UI-master\ZdfFlatUI\ICoraUI.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="GashByte-透明.ico">
@@ -100,8 +76,5 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Hoyolab\" />
   </ItemGroup>
 </Project>

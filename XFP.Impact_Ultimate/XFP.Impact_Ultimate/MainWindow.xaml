@@ -8,7 +8,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:WPF.UI="clr-namespace:ZdfFlatUI;assembly=WPF.UI"
+        xmlns:WPF.UI="clr-namespace:UI;assembly=WPF.UI"
         xmlns:local="clr-namespace:XFP.Impact_Ultimate"
         xmlns:Fluent="urn:fluent-ribbon"
         xmlns:hc="https://handyorg.github.io/handycontrol"
