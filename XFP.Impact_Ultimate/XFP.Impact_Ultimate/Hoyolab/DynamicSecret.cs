@@ -25,7 +25,6 @@ namespace XFP.Impact_Ultimate.Hoyolab
             return $"{t},{r},{check}";
         }
 
-
         public static string CreateSecret2(string url, object? postBody = null)
         {
             int t = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();

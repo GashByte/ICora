@@ -1,14 +1,19 @@
 ﻿//Copyright (c) XFP Group and Contributors. All rights resvered.
 //Licensed under the MIT License.
 
+using HandyControl.Controls;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using XFP.Impact_Ultimate.Hoyolab.Account;
+using XFP.Impact_Ultimate.Hoyolab.DailyNote;
+using XFP.Impact_Ultimate.Hoyolab.GameRecord;
+using XFP.Impact_Ultimate.Hoyolab.TravelNotes;
 using XFP.Impact_Ultimate.ICoraException;
 
 namespace XFP.Impact_Ultimate.Hoyolab
@@ -65,6 +70,103 @@ namespace XFP.Impact_Ultimate.Hoyolab
         }
 
         /// <summary>
+        /// 更新米游社数据
+        /// </summary>
+        /// <returns></returns>
+        public async Task UpdateAllAccountsAsync()
+        {
+            await GetHoyolabUserInfoAsync(Properties.Settings.Default.UserCookie!);
+            await GetGenshinRoleInfoListAsync(Properties.Settings.Default.UserCookie!);
+        }
+
+        public async Task<bool> SignInAsync(GenshinRoleInfo role, bool skipCheckWhetherHaveSignedIn = false, CancellationToken? cancellationToken = null)
+        {
+            if (!skipCheckWhetherHaveSignedIn)
+            {
+                var signInfo = await GetSignInInfoAsync(role, cancellationToken);
+                if (signInfo.IsSign)
+                {
+                    return false;
+                }
+            }
+            var obj = new { act_id = "e202009291139501", region = role.Region.ToString(), uid = role.Uid.ToString() };
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api-takumi.mihoyo.com/event/bbs_sign_reward/sign");
+            request.Headers.Add(Cookie, role.Cookie);
+            request.Headers.Add(DS, DynamicSecret.CreateSecret());
+            request.Headers.Add(x_rpc_app_version, AppVersion);
+            request.Headers.Add(x_rpc_device_id, DeviceId);
+            request.Headers.Add(x_rpc_client_type, "5");
+            request.Headers.Add(X_Reuqest_With, com_mihoyo_hyperion);
+            request.Headers.Add(Referer, "https://webstatic.mihoyo.com/bbs/event/signin-ys/index.html?bbs_auth_required=true&act_id=e202009291139501&utm_source=bbs&utm_medium=mys&utm_campaign=icon");
+            request.Content = JsonContent.Create(obj);
+            var risk = await CommonSendAsync<SignInRisk>(request, cancellationToken);
+            if (risk is null or { RiskCode: 0, Success: 0 })
+            {
+                return true;
+            }
+            else
+            {
+                Growl.Clear();
+                Growl.Error($"账户 {role.Nickname} 受到风控限制 请手动签到");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 实时便笺
+        /// </summary>
+        /// <param name="role"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<DailyNoteInfo> GetDailyNoteAsync(GenshinRoleInfo role, CancellationToken? cancellationToken = null)
+        {
+            var url = $"https://api-takumi-record.mihoyo.com/game_record/app/genshin/api/dailyNote?server={role.Region}&role_id={role.Uid}";
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Add(Cookie, role.Cookie);
+            request.Headers.Add(DS, DynamicSecret.CreateSecret2(url));
+            request.Headers.Add(Referer, "https://webstatic.mihoyo.com/app/community-game-records/?game_id=2&utm_source=bbs&utm_medium=mys&utm_campaign=box");
+            request.Headers.Add(x_rpc_app_version, AppVersion);
+            request.Headers.Add(x_rpc_client_type, "5");
+            request.Headers.Add(X_Reuqest_With, com_mihoyo_hyperion);
+            var data = await CommonSendAsync<DailyNoteInfo>(request);
+            data.Uid = role.Uid;
+            data.Nickname = role.Nickname;
+            return data;
+        }
+
+        /// <summary>
+        /// 旅行札记总览
+        /// </summary>
+        /// <param name="role"></param>
+        /// <param name="month">0 当前月</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<TravelNotesSummary> GetTravelNotesSummaryAsync(GenshinRoleInfo role, int month = 0, CancellationToken? cancellationToken = null)
+        {
+            var url = $"https://hk4e-api.mihoyo.com/event/ys_ledger/monthInfo?month={month}&bind_uid={role.Uid}&bind_region={role.Region}&bbs_presentation_style=fullscreen&bbs_auth_required=true&utm_source=bbs&utm_medium=mys&utm_campaign=icon";
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Add(Cookie, role.Cookie);
+            request.Headers.Add(Referer, "https://webstatic.mihoyo.com/ys/event/e20200709ysjournal/index.html?bbs_presentation_style=fullscreen&bbs_auth_required=true&utm_source=bbs&utm_medium=mys&utm_campaign=icon");
+            request.Headers.Add(X_Reuqest_With, com_mihoyo_hyperion);
+            return await CommonSendAsync<TravelNotesSummary>(request);
+        }
+
+        /// <summary>
+        /// 账号的签到信息
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public async Task<SignInInfo> GetSignInInfoAsync(GenshinRoleInfo role, CancellationToken? cancellationToken = null)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api-takumi.mihoyo.com/event/bbs_sign_reward/info?act_id=e202009291139501&region={role.Region}&uid={role.Uid}");
+            request.Headers.Add(Cookie, role.Cookie);
+            request.Headers.Add(x_rpc_device_id, DeviceId);
+            request.Headers.Add(X_Reuqest_With, com_mihoyo_hyperion);
+            request.Headers.Add(Referer, "https://webstatic.mihoyo.com/bbs/event/signin-ys/index.html?bbs_auth_required=true&act_id=e202009291139501&utm_source=bbs&utm_medium=mys&utm_campaign=icon");
+            return await CommonSendAsync<SignInInfo>(request, cancellationToken);
+        }
+
+        /// <summary>
         /// 米游社账号信息
         /// </summary>
         /// <param name="cookie"></param>
@@ -107,6 +209,25 @@ namespace XFP.Impact_Ultimate.Hoyolab
             var data = await CommonSendAsync<GenshinRoleInfoWrapper>(request, cancellationToken);
             data.List?.ForEach(x => x.Cookie = cookie);
             return data.List ?? new List<GenshinRoleInfo>();
+        }
+
+        /// <summary>
+        /// 获取用户战绩
+        /// </summary>
+        /// <param name="role"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<GameRecordSummary> GetGameRecordAsync(GenshinRoleInfo role, CancellationToken? cancellationToken = null)
+        {
+            var url = $"https://api-takumi-record.mihoyo.com/game_record/app/genshin/api/index?server={role.Region}&role_id={role.Uid}";
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Add(Cookie, role.Cookie);
+            request.Headers.Add(DS, DynamicSecret.CreateSecret2(url));
+            request.Headers.Add(Referer, "https://webstatic.mihoyo.com/app/community-game-records/?game_id=2&utm_source=bbs&utm_medium=mys&utm_campaign=box");
+            request.Headers.Add(x_rpc_app_version, AppVersion);
+            request.Headers.Add(x_rpc_client_type, "5");
+            request.Headers.Add(X_Reuqest_With, com_mihoyo_hyperion);
+            return await CommonSendAsync<GameRecordSummary>(request);
         }
     }
 }
