@@ -78,4 +78,4 @@
 您和本开发团队均是独立的主体，在任何情况下本协议不构成本开发团队对用户的任何形式的明示或暗示担保或条件，双方之间亦不构成代理、合伙、合营或雇佣关系。
 
 **14、**
-本"用户使用协议和法律声明"中，"我们"或称"本开发团队"(区别于"用户"或"您")的实际主体为"_XFP Group_开发团队"的团队整体及每个成员个人，即包含前述网站（ https://gitee.com/XFP-Group ）中，[XFP Group开发团队]( https://gitee.com/organizations/XFP-Group/members/list )的全部成员。
+本"用户使用协议和法律声明"中，"我们"或称"本开发团队"(区别于"用户"或"您")的实际主体为" _XFP Group_ 开发团队"的团队整体及每个成员个人，即包含前述网站（ https://gitee.com/XFP-Group ）中，[XFP Group开发团队]( https://gitee.com/organizations/XFP-Group/members/list )的全部成员。
