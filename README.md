@@ -32,7 +32,7 @@
 
 ## 关于ICora
 ## 什么是ICora？
-- ICora是XFP Group独自开发的免费原神工具箱，并且它严格遵守开源协议。
+- XFP.Impact_Ultimate.Cora(ICora)是XFP Group独自开发的免费原神工具箱，并且它严格遵守开源协议。
 - 目前，它只支持中国版的原神，但我们正在朝着国际化的方向发展。
 ## 功能
 V1.3.10
