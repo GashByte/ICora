@@ -13,7 +13,6 @@ namespace XFP.ICora
         DataProvider data = new();
         LogWriter log = new();
         GetFormUrl GetFormUrl = new GetFormUrl();
-        Notifiaction notifiaction = new();
 
         #endregion
 
@@ -64,17 +63,6 @@ namespace XFP.ICora
             // 实例化
             MenuList = new ObservableCollection<MenuInfo>();
             settingsMenu = new ObservableCollection<MenuInfo>();
-
-            #region BackGround
-            // 通过笔刷进行绘制背景图片 后期用户可以自定义背景图片
-            //if (File.Exists(Environment.CurrentDirectory + "\\bg\\BackGround.png"))
-            //{
-            //    ImageBrush b = new ImageBrush();
-            //    b.ImageSource = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\bg\\BackGround.png"));
-            //    b.Stretch = Stretch.Fill;
-            //    Background = b;
-            //}
-            #endregion
 
             #region Basic
             MenuList.Add(new MenuInfo()
