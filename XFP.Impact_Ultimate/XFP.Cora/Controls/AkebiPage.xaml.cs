@@ -921,10 +921,10 @@ namespace XFP.ICora.Controls
                             HttpWebResponse response = request.GetResponse() as HttpWebResponse;
                             if (localsize != response.ContentLength)
                             {
-                                if (ZMessageBox.Show(
+                                if (MessageBox.Show(
                                     System.Windows.Window.GetWindow(this),
                                     "您的Dll大小不正确 这也许是服务器返回了不正确的大小 是否要尝试启动？选择否则下载服务器中的Dll"
-                                    , "", MessageBoxButton.YesNoCancel, EnumPromptType.Error) == MessageBoxResult.Yes)
+                                    , "", MessageBoxButton.YesNoCancel, MessageBoxImage.Error) == MessageBoxResult.Yes)
                                 {
                                     Growl.Clear();
                                     Growl.Warning("如果启动失败(原神未启动)则是Dll不正确导致的\n您可以下载服务器中的Dll或者下载群中的Akebi 然后手动导入Dll\n" +
