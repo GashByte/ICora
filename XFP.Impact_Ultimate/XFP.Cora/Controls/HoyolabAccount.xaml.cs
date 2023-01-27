@@ -68,7 +68,10 @@ namespace XFP.ICora.Controls
                 UserHoyolabUid.Text = $"Uid {RoleMaskId}";
                 UserGenshinServer.Text = $"您在 {genshinRoleInfo.RegionName} ";
                 UserGenshinLevel.Text = $"您 {genshinRoleInfo.Level} 级了";
-                HeadFrame.Source = new BitmapImage(new Uri(user.Pendant));
+                if (user.Pendant != string.Empty)
+                {
+                    HeadFrame.Source = new BitmapImage(new Uri(user.Pendant));
+                }
                 Intr.Text = $"简介：{user.Introduce}";
                 UHoyolabAccount.Text = $"嗨！别来无恙啊！{user.Nickname} 最近生活是否如意？";
                 InputCookie.IsEnabled = false;
@@ -426,8 +429,8 @@ namespace XFP.ICora.Controls
                 Growl.Warning("您没有选择一个账户");
                 return;
             }
-            if (ZMessageBox.Show(Window.GetWindow(this),
-                "您确定要这么做？\n这是不可逆的操作", "", MessageBoxButton.YesNo, EnumPromptType.Warn) == MessageBoxResult.Yes)
+            if (MessageBox.Show(Window.GetWindow(this),
+                "您确定要这么做？\n这是不可逆的操作", "", MessageBoxButton.YesNo, MessageBoxImage.Hand) == MessageBoxResult.Yes)
             {
                 Properties.Settings.Default.UserCookie = string.Empty;
                 Properties.Settings.Default.Save();
