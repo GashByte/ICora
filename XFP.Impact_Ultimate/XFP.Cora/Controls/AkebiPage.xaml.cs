@@ -173,16 +173,6 @@ namespace XFP.ICora.Controls
         #region Normal Method
 
         /// <summary>
-        /// 判断程序是否是以管理员身份运行。
-        /// </summary>
-        public bool IsRunAsAdmin()
-        {
-            WindowsIdentity id = WindowsIdentity.GetCurrent();
-            WindowsPrincipal principal = new WindowsPrincipal(id);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
-        /// <summary>
         /// 刷新List
         /// </summary>
         private void RefreshList()
@@ -834,13 +824,6 @@ namespace XFP.ICora.Controls
                 }
                 else if (UGameStartModel.Text == "注入DLL")
                 {
-                    if (!IsRunAsAdmin())
-                    {
-                        Growl.Clear();
-                        Growl.Warning("提权失败 请以管理员模式启动ICora后重试\n游戏正常启动");
-                        StartGameNormal();
-                        return;
-                    }
                     if (UGameService.Text == "国际服 | Global")
                     {
                         Growl.Clear();
@@ -885,6 +868,29 @@ namespace XFP.ICora.Controls
                             }
                             if (content == "dll")
                             {
+                                WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
+                                bool isAdministrator = currentUser.IsSystem;
+                                if (!isAdministrator)
+                                {
+                                    Growl.Clear();
+                                    Growl.Warning("未获取提权, 无法载入Dll\n正在请求提权");
+                                    if (MessageBox.Show("是否进行提权操作？", "申请提权", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                                    {
+                                        ProcessStartInfo startInfo = new ProcessStartInfo();
+                                        startInfo.FileName = Application.Current + "\\XFP.ICora.exe";
+                                        startInfo.Verb = "runas";
+                                        Process.Start(startInfo);
+                                        Environment.Exit(0);
+                                    }
+                                    else
+                                    {
+                                        Growl.Clear();
+                                        Growl.Warning("游戏已正常启动");
+                                        StartGameNormal();
+                                        return;
+                                    }
+                                    return;
+                                }
                                 if (File.Exists(UChooseDll.Text))
                                 {
                                     CLPath = UChooseDll.Text;
