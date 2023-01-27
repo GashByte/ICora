@@ -1,0 +1,51 @@
+﻿<!--
+    Copyright (c) XFP Group and Contributors. All rights resvered.
+    Licensed under the MIT License. 
+-->
+<UserControl x:Class="XFP.ICora.Controls.Basic.LoginFormMihoyo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:XFP.ICora.Controls.Basic"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+             FontFamily="Arial Black"
+             mc:Ignorable="d"
+             d:DesignHeight="624"
+             d:DesignWidth="886">
+    <hc:TransitioningContentControl>
+        <Grid>
+            <hc:ScrollViewer IsInertiaEnabled="True">
+                <hc:UniformSpacingPanel Margin="32"
+                                        Spacing="5"
+                                        Orientation="Vertical">
+                    <Button Content="我已经登陆完了"
+                            Name="Logined"
+                            Click="Logined_Click"
+                            Height="32"
+                            Width="213"
+                            hc:IconElement.Geometry="{StaticResource SuccessGeometry}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Margin="600,-24,0,0" />
+                    <TextBlock HorizontalAlignment="Left"
+                               Text="登录到米哈游"
+                               Style="{StaticResource TextBlockLargeBold}" />
+                    <hc:ScrollViewer Name="ScrollViewerDemo"
+                                     IsInertiaEnabled="True"
+                                     Height="511">
+                        <Border Height="478"
+                                Margin="8,0"
+                                Width="812">
+                            <Grid>
+                                <Wpf:WebView2 Name="_WebView2"
+                                              Source="https://user.mihoyo.com/#/login/captcha" />
+                            </Grid>
+                        </Border>
+                    </hc:ScrollViewer>
+                </hc:UniformSpacingPanel>
+            </hc:ScrollViewer>
+        </Grid>
+    </hc:TransitioningContentControl>
+</UserControl>
