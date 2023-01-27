@@ -1,10 +1,23 @@
+# **ICora** ![GitHub last commit](https://img.shields.io/github/last-commit/GashByte/ICora) ![Github Release](https://img.shields.io/github/downloads/GashByte/ICora/ICoraV1.3.10/total) 
+
+![ICora](https://socialify.git.ci/GashByte/ICora/image?description=1&descriptionEditable=%E5%8E%9F%E7%A5%9E%E5%B7%A5%E5%85%B7%E7%AE%B1%20%7C%20XFP.ICora&forks=1&language=1&name=1&pattern=Overlapping%20Hexagons&stargazers=1&theme=Auto)
+
+## 目录
+
+- [关于我们](#关于我们)
+- [功能](#它支持什么？)
+- [下载](#我们该如何获取他？)
+- [使用说明](#使用说明)
+- [参与贡献](#参与贡献)
+- [隐私策略及用户协议](#隐私策略--用户协议)
+
 # 旅行者踏上了路途
 
 ## 嗨，旅行者别来无恙啊！
 希望你没有忘记最初来到这片大陆的约定。
 
 ## 关于我们
-|创作团队|XFPStudio|
+|创作团队|XFPGroup|
 |---|---
 |贡献者|x3zF、LoserSkidder、SaA3ne、GashByte|
 |一群|811979687|
@@ -18,20 +31,47 @@
 - ❤ 就在 -> https://github.com/GashByte/ICora ❤
 
 ## 关于ICora
-### 什么是ICora？
+## 什么是ICora？
 - ICora是XFP Group独自开发的免费原神工具箱，并且它严格遵守开源协议。
 - 目前，它只支持中国版的原神，但我们正在朝着国际化的方向发展。
-### 它支持什么？
-- 例如, 注入Dll, 获取角色数据, 保存用户的原神账户, 转换服务器, 获取祈愿记录, 等等
-### 它会一直免费吗？
+## 它支持什么？
+V1.3.10
+- [x] 游戏启动
+- [x] 米游社账户
+- [ ] 深渊记录
+- [ ] 祈愿记录
+- [ ] 成就管理
+- [ ] 角色练度
+- [ ] 养成计划
+- [ ] 游戏公告
+- [ ] 活动公告
+- [ ] 图鉴管理
+- [ ] 过场动画
+- [ ] 自定义便签
+- 剩余的内容 XFPGroup正在努力开发！
+
+## 它会一直免费吗？
 - 是的, 我们将一直提供它的支持直到原神停止它的更新
-### 我们该如何获取他？
+## 我们该如何获取他？
 - 访问我们的官网或者获取ICora的源码.
 - 官网: https://gashbyte.github.io/ICoraIndex .
 - 源码存储库: https://github.com/GashByte/ICora .
+***More***
+- [转服包](https://github.com/GashByte/ICora/releases/download/%E8%BD%AC%E6%9C%8D%E5%8C%85/default.zip)
+- [ICora v1.3.10 REL](https://github.com/GashByte/ICora/releases/download/ICoraV1.3.10/ICoraV1.3.10Release.zip)
+## 使用说明
  
+- 解压REL压缩包，运行```XFP.ICora.exe```即可畅玩
 
-### ❤ 我们希望ICora能成为您爱不释手的原神工具箱！❤
+
+## [参与贡献](/CONTRIBUTING.md)
+
+## [隐私策略](/PrivacyPolicy.md) | [用户协议](/UserUseArgeement.md)
+
+**感谢 宵宫(@Doctor-yoi) 提供README**
+---
+
+## ❤ 我们希望ICora能成为您爱不释手的原神工具箱！❤
 - 加入群聊获取更多资讯：
 - 原神交流群一群 811979687
 - 原神交流群二群 590566763
