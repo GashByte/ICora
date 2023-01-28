@@ -7,8 +7,8 @@ namespace XFP.Impact_Ultimate.CLDownloader
 {
     public class CLDownloader
     {
-        private static string Impact_UltimatePath = Environment.CurrentDirectory + "\\Impact_Ultimate";
-        private static string AkebiPath = Environment.CurrentDirectory + "\\Impact_Ultimate\\CLibrary.dll";
+        private static string Impact_UltimatePath = Environment.CurrentDirectory + "\\ICora";
+        private static string AkebiPath = Environment.CurrentDirectory + "\\ICora\\CLibrary.dll";
 
         static void Main()
         {
