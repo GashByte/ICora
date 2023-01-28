@@ -199,6 +199,8 @@ namespace XFP.ICora.Controls
                     Insert(roleGameRecord.WorldExplorations[1].ExplorationPercentage.ToString().Length - 1, ".")}%";
                 XumiE.Text = $"{roleGameRecord.WorldExplorations[0].ExplorationPercentage.ToString().
                     Insert(roleGameRecord.WorldExplorations[0].ExplorationPercentage.ToString().Length - 1, ".")}%";
+    
+                GetDailyNotesAsync();
             }
             catch (Exception ex)
             {
@@ -276,6 +278,10 @@ namespace XFP.ICora.Controls
                             {
                                 foreach (string key in ImageValue.Keys)
                                 {
+                                    if (Expeditions == FinishedCount)
+                                    {
+                                        break;
+                                    }
                                     if (dailynote.Expeditions[FinishedCount].AvatarSideIcon != null)
                                     { 
                                         Image avatarsideicon = ImageValue[key];
@@ -335,7 +341,7 @@ namespace XFP.ICora.Controls
                             }
                             Growl.Clear();
                             Growl.Success(TipText + "快上线原神来玩玩吧！");
-                            CurrentPrimogems.Text = travelnote.MonthData.LastPrimogems.ToString();
+                            CurrentPrimogems.Text = travelnote.DayData.LastPrimogems.ToString();
                             CurrentMora.Text = travelnote.DayData.LastMora.ToString();
                             Initialized(Properties.Settings.Default.LastUid.ToString());
                         }
