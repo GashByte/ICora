@@ -165,6 +165,23 @@ namespace XFP.ICora.Controls
                 #endregion
             }
             catch { }
+            
+            // 进行全局检查
+            WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
+            bool isAdministrator = currentUser.IsSystem;
+            if (!isAdministrator)
+            {
+                Growl.Clear();
+                Growl.Warning("未获取提权 部分功能将无法使用");
+                UStartModel.Content = "默认模式";
+                UStartModel.IsEnabled = false;
+                UChooseDllPath.IsEnabled = false;
+                UChooseDll.Opacity = 0.5;
+                UGameStartModel.Text = UStartModel.Content.ToString();
+                key.sk("Start Game Model", UGameStartModel.Text);
+                UChooseService.IsEnabled = false;
+            }
+            
             #endregion
         }
 
@@ -831,7 +848,6 @@ namespace XFP.ICora.Controls
                         StartGameNormal();
                         return;
                     }
-
                     string UPath = Environment.CurrentDirectory;
                     Regex regex = new Regex("[\u4e00-\u9fa5]+");
                     if (regex.IsMatch(UPath))
@@ -868,29 +884,6 @@ namespace XFP.ICora.Controls
                             }
                             if (content == "dll")
                             {
-                                WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
-                                bool isAdministrator = currentUser.IsSystem;
-                                if (!isAdministrator)
-                                {
-                                    Growl.Clear();
-                                    Growl.Warning("未获取提权, 无法载入Dll\n正在请求提权");
-                                    if (MessageBox.Show("是否进行提权操作？", "申请提权", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                                    {
-                                        ProcessStartInfo startInfo = new ProcessStartInfo();
-                                        startInfo.FileName = Application.Current + "\\XFP.ICora.exe";
-                                        startInfo.Verb = "runas";
-                                        Process.Start(startInfo);
-                                        Environment.Exit(0);
-                                    }
-                                    else
-                                    {
-                                        Growl.Clear();
-                                        Growl.Warning("游戏已正常启动");
-                                        StartGameNormal();
-                                        return;
-                                    }
-                                    return;
-                                }
                                 if (File.Exists(UChooseDll.Text))
                                 {
                                     CLPath = UChooseDll.Text;
