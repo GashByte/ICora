@@ -167,9 +167,9 @@ namespace XFP.ICora.Controls
             catch { }
             
             // 进行全局检查
-            WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
-            bool isAdministrator = currentUser.IsSystem;
-            if (!isAdministrator)
+            WindowsIdentity id = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(id);
+            if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
             {
                 Growl.Clear();
                 Growl.Warning("未获取提权 部分功能将无法使用");
