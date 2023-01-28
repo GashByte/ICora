@@ -59,7 +59,7 @@ namespace XFP.ICora.Controls
                     // 30s超时
                     while (true)
                     {
-                        if (!RefreshTask.Wait(3000))
+                        if (!RefreshTask.Wait(30000))
                         {
                             Dispatcher.BeginInvoke(new Action(delegate
                             {
