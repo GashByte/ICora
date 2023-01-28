@@ -56,6 +56,7 @@ namespace XFP.ICora.Controls
                             }));
                         }
                     });
+                    RefreshTask.Start();
                     // 一分钟超时
                     if (!RefreshTask.Wait(60000))
                     {
@@ -275,14 +276,14 @@ namespace XFP.ICora.Controls
                             {
                                 foreach (string key in ImageValue.Keys)
                                 {
-                                    if (dailynote.Expeditions[FinishedCount].AvatarSideIcon != null)
+                                    if (dailynote.Expeditions[FinishedCount - 1].AvatarSideIcon != null)
                                     { 
                                         Image avatarsideicon = ImageValue[key];
-                                        avatarsideicon.Source = new BitmapImage(new Uri(dailynote.Expeditions[FinishedCount].AvatarSideIcon));
+                                        avatarsideicon.Source = new BitmapImage(new Uri(dailynote.Expeditions[FinishedCount - 1].AvatarSideIcon));
                                         TextBlock text = ExpeditionsTime[key];
-                                        if (dailynote.Expeditions[FinishedCount].Status == "Ongoing")
+                                        if (dailynote.Expeditions[FinishedCount - 1].Status == "Ongoing")
                                         {
-                                            text.Text = dailynote.Expeditions[FinishedCount].FinishedTime.ToString();
+                                            text.Text = dailynote.Expeditions[FinishedCount - 1].FinishedTime.ToString();
                                         }
                                         else
                                         {
