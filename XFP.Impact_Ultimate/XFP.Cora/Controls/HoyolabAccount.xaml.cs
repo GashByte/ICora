@@ -112,11 +112,6 @@ namespace XFP.ICora.Controls
                 {
                     Growl.Clear();
                     Growl.Error("米游社凭证过期 正在尝试刷新");
-                    /*
-                    Properties.Settings.Default.UserCookie = string.Empty;
-                    Properties.Settings.Default.Save();
-                    Properties.Settings.Default.Upgrade();
-                    */
                     await new LoginFormMihoyo().FinishAndAddCookie(UserCookie, true);
                     Initialized();
                     return;
