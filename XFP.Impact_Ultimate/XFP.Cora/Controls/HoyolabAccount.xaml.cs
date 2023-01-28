@@ -103,6 +103,7 @@ namespace XFP.ICora.Controls
                 catch (Exception ex)
                 {
                     Growl.Error($"在签到时 {ex.Message}");
+                    Initialized();
                 }
             }
             catch (Exception ex)
@@ -167,14 +168,12 @@ namespace XFP.ICora.Controls
                     Insert(roleGameRecord.WorldExplorations[1].ExplorationPercentage.ToString().Length - 1, ".")}%";
                 XumiE.Text = $"{roleGameRecord.WorldExplorations[0].ExplorationPercentage.ToString().
                     Insert(roleGameRecord.WorldExplorations[0].ExplorationPercentage.ToString().Length - 1, ".")}%";
-
-                Initialized(uid);
-
             }
             catch (Exception ex)
             {
                 Growl.Clear();
                 Growl.Error($"在获取用户战绩时出错 {ex.Message}");
+                Initialized();
             }
         }
 
@@ -198,6 +197,7 @@ namespace XFP.ICora.Controls
             {
                 Growl.Clear();
                 Growl.Error($"在获取图片时出错 {ex.Message}");
+                Initialized();
             }
         }
 
@@ -221,95 +221,92 @@ namespace XFP.ICora.Controls
 
                         try
                         {
-                            AvatarSideIconI.Source = new BitmapImage(new Uri(dailynote.Expeditions[0].AvatarSideIcon));
-                            AvatarSideIconII.Source = new BitmapImage(new Uri(dailynote.Expeditions[1].AvatarSideIcon));
-                            AvatarSideIconIII.Source = new BitmapImage(new Uri(dailynote.Expeditions[2].AvatarSideIcon));
-                            AvatarSideIconIV.Source = new BitmapImage(new Uri(dailynote.Expeditions[3].AvatarSideIcon));
-                            AvatarSideIconV.Source = new BitmapImage(new Uri(dailynote.Expeditions[4].AvatarSideIcon));
-
                             int FinishedCount = 0;
+                            string TipText = "";
+                            Dictionary<string, Image> ImageValue = new Dictionary<string, Image>
+                            {
+                                { "I", AvatarSideIconI },
+                                { "II", AvatarSideIconII },
+                                { "III", AvatarSideIconIII },
+                                { "IV", AvatarSideIconIV },
+                                { "V", AvatarSideIconV }
+                            };
+                            Dictionary<string, TextBlock> ExpeditionsTime = new Dictionary<string, TextBlock>
+                            {
+                                { "I", RemainedTimeI },
+                                { "II", RemainedTimeII },
+                                { "III", RemainedTimeIII },
+                                { "IV", RemainedTimeIV },
+                                { "V", RemainedTimeV }
+                            };
 
-                            if (dailynote.Expeditions[0].Status == "Ongoing")
+                            int Expeditions = dailynote.CurrentExpeditionNumber;
+                            if (Expeditions != 0)
                             {
-                                RemainedTimeI.Text = dailynote.Expeditions[0].RemainedTime.ToString();
-                                FinishedCount += 1;
-                            }
-                            else
-                            {
-                                RemainedTimeI.Text = "已完成";
-                            }
+                                foreach (string key in ImageValue.Keys)
+                                {
+                                    if (dailynote.Expeditions[FinishedCount].AvatarSideIcon != null)
+                                    { 
+                                        Image avatarsideicon = ImageValue[key];
+                                        avatarsideicon.Source = new BitmapImage(new Uri(dailynote.Expeditions[FinishedCount].AvatarSideIcon));
+                                        TextBlock text = ExpeditionsTime[key];
+                                        if (dailynote.Expeditions[FinishedCount].Status == "Ongoing")
+                                        {
+                                            text.Text = dailynote.Expeditions[FinishedCount].FinishedTime.ToString();
+                                        }
+                                        else
+                                        {
+                                            text.Text = "已完成";
+                                        }
+                                    }
+                                    FinishedCount++;
+                                }
 
-                            if (dailynote.Expeditions[1].Status == "Ongoing")
-                            {
-                                RemainedTimeII.Text = dailynote.Expeditions[1].RemainedTime.ToString();
-                                FinishedCount += 1;
-                            }
-                            else
-                            {
-                                RemainedTimeII.Text = "已完成";
-                            }
-
-                            if (dailynote.Expeditions[2].Status == "Ongoing")
-                            {
-                                RemainedTimeIII.Text = dailynote.Expeditions[2].RemainedTime.ToString();
-                                FinishedCount += 1;
-                            }
-                            else
-                            {
-                                RemainedTimeIII.Text = "已完成";
-                            }
-
-                            if (dailynote.Expeditions[3].Status == "Ongoing")
-                            {
-                                RemainedTimeIV.Text = dailynote.Expeditions[3].RemainedTime.ToString();
-                                FinishedCount += 1;
-                            }
-                            else
-                            {
-                                RemainedTimeIV.Text = "已完成";
-                            }
-
-                            if (dailynote.Expeditions[4].Status == "Ongoing")
-                            {
-                                RemainedTimeV.Text = dailynote.Expeditions[4].RemainedTime.ToString();
-                                FinishedCount += 1;
-                            }
-                            else
-                            {
-                                RemainedTimeV.Text = "已完成";
-                            }
-                            if (FinishedCount != dailynote.MaxExpeditionNumber)
-                            {
-                                ExpeditionsStatus.Text = $"派遣完成度({FinishedCount}/{dailynote.MaxExpeditionNumber})";
-                            }
-                            else
-                            {
-                                Growl.SuccessGlobal("派遣已完成 快点领取奖励吧！");
+                                if (FinishedCount != dailynote.CurrentExpeditionNumber)
+                                {
+                                    ExpeditionsStatus.Text = $"派遣完成度({FinishedCount}/{dailynote.CurrentExpeditionNumber})";
+                                }
+                                else
+                                {
+                                    ExpeditionsStatus.Text = "派遣已完成！";
+                                    TipText += "派遣已完成 快点领取奖励吧！\n";
+                                }
                             }
 
                             ResinCurrent.Text = $"{dailynote.CurrentResin}/{dailynote.MaxResin}";
                             if (dailynote.CurrentResin == dailynote.MaxResin)
                             {
-                                Growl.SuccessGlobal("体力回复满了 快点使用吧！");
+                                TipText += "体力已满\n";
                             }
                             HomeCoinCurrent.Text = $"{dailynote.CurrentHomeCoin}/{dailynote.MaxHomeCoin}";
                             if (dailynote.CurrentHomeCoin == dailynote.MaxHomeCoin)
                             {
-                                Growl.SuccessGlobal("洞天宝钱满了 快点领取吧！");
+                                TipText += "洞天宝钱已满\n";
                             }
                             DailyTaskCurrent.Text = $"{dailynote.FinishedTaskNumber}/4";
+                            if (dailynote.FinishedTaskNumber == 0)
+                            {
+                                TipText += "今日委托未刷\n";
+                            }
                             ResinDiscountCurrent.Text = $"{dailynote.ResinDiscountLimitedNumber}/3";
+                            if (dailynote.ResinDiscountLimitedNumber == 3)
+                            {
+                                TipText += "本周体力减半未使用\n";
+                            }
                             if (dailynote.Transformer.RecoveryTime.Day != 0)
                             {
                                 TransformerCurrent.Text = $"还有 {dailynote.Transformer.RecoveryTime.Day} 天";
                             }
-                            else 
+                            else
                             {
                                 TransformerCurrent.Text = $"已冷却";
-                                Growl.SuccessGlobal("参量质变仪已冷却 快点使用吧！");
+                                TipText += "参量质变仪已冷却\n";
                             }
+                            Growl.Clear();
+                            Growl.Success(TipText + "快上线原神来玩玩吧！");
                             CurrentPrimogems.Text = travelnote.MonthData.LastPrimogems.ToString();
                             CurrentMora.Text = travelnote.DayData.LastMora.ToString();
+                            Initialized(Properties.Settings.Default.LastUid.ToString());
                         }
                         catch {  }
                     }
@@ -318,6 +315,7 @@ namespace XFP.ICora.Controls
                         Growl.Clear();
                         Growl.Warning("在获取实时数据时 " + ex.Message + " 请前往手机端米游社手动刷新实时便签");
                         PaimonEmo.Visibility = Visibility.Visible;
+                        Initialized();
                     }
                 }
             }
@@ -325,6 +323,7 @@ namespace XFP.ICora.Controls
             {
                 Growl.Clear();
                 Growl.Error("在获取实时数据时 " + ex.Message);
+                Initialized();
             }
         }
 
