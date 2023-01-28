@@ -956,7 +956,7 @@
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top" />
                                 <TextBlock
                                     HorizontalAlignment="Left"
-                                    Text="摩拉收益(上月)"
+                                    Text="摩拉收益"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
                                     Margin="346,414,0,0"
                                     FontSize="11"
@@ -973,7 +973,7 @@
                                     Height="14"
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top" HorizontalAlignment="Left" />
                                 <TextBlock
-                                    Text="原石收益(上月)"
+                                    Text="原石收益"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
                                     Margin="456,414,0,0"
                                     FontSize="11"
