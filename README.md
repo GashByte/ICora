@@ -58,7 +58,7 @@ V1.3.10
 - 源码存储库: https://github.com/GashByte/ICora .
 - ***More***
 - [转服包](https://github.com/GashByte/ICora/releases/download/%E8%BD%AC%E6%9C%8D%E5%8C%85/default.zip)
-- [ICora v1.3.10 REL](https://github.com/GashByte/ICora/releases/download/ICora/ICoraRelease.zip)
+- [ICora v1.3.11 REL](https://github.com/GashByte/ICora/releases/download/ICora/ICoraRelease.zip)
 ## 使用说明
  
 - 解压REL压缩包，运行```XFP.ICora.exe```即可畅玩
@@ -77,25 +77,22 @@ V1.3.10
 - 原神交流群二群 590566763
 群内附带Acrepi、阻尼器等实用原神软件！
 
-## 关于1.3.10更新的内容！
-***V1.3.10***
-- [x] 删除了UID绑定 By x3zF
-- [x] 完善了米哈游账户页面 By x3zF
-- [x] 删除了转换点位 By SaA3ne
-- [x] 删除了开始游戏 传送点位获取 按钮 By LoserSkidder
-- [x] 添加了实时检测版本更新的逻辑 By x3zF
-- [x] 修复了米哈游账户数据的保存问题 By x3zF
-- [x] ~~添加了实时便签页面 By LoserSkidder~~
-- [x] 将实时便签移植到了米哈游账户页面 By SaA3ne
-- [x] 添加了自定义注入文件 By x3zF
-- [x] (也许)修复了自定义选择注入Dll注入崩溃的问题
-**Build 230127**
+## 关于1.3.11更新的内容！
+***V1.3.11**
+- 集中修复了已知Bug
+- 添加了自定义便签页面(未完善)
+- 添加了祈愿记录页面(未完善)
+- 优化了部分代码
+**Build 230129**
 
 ## 关于下个版本要添加的内容(拟定) - 给制作小组看的QAQ
-- [ ] 修改页面UI的已知Bug
+- [x] 修改页面UI的已知Bug
 - [ ] 添加祈愿记录(页面)
 - [ ] 添加自定义便签(页面)
 - [ ] 修复已知的bug
    - [x] 在添加账户时 弹出bug(原因：无法解析用户头像)
-   - [ ] ~~在选择Dll注入时 自定义Dll路径不包含中文仍弹出提示~~
+   - [ ] ~~在选择Dll注入时 自定义Dll路径不包含中文仍弹出提示~~ *wontfix*
+   - [x] 实时检查CL无法点击、不检查
+   - [x] 米哈游刷新过快问题
+   - [x] 派遣提示错误的问题
    - **更多Bug请在Issues反馈哦！❤**
