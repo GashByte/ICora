@@ -5,13 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:XFP.ICora.Controls"
              xmlns:hc="https://handyorg.github.io/handycontrol"
-             mc:Ignorable="d" 
-             FontFamily="Bahnschrift SemiBold"
+             mc:Ignorable="d"
+             FontFamily="{StaticResource GenshinImapctFont}"
              d:DesignHeight="624"
              d:DesignWidth="886">
     <hc:TransitioningContentControl>
         <Grid>
-            <hc:ScrollViewer IsInertiaEnabled="True">
+            <hc:ScrollViewer IsInertiaEnabled="True" Margin="0,0,0,10">
                 <hc:UniformSpacingPanel Margin="32"
                                         Spacing="5"
                                         Orientation="Vertical">
@@ -20,11 +20,15 @@
                                Style="{StaticResource TextBlockLargeBold}" />
                     <hc:ScrollViewer Name="ScrollViewerDemo"
                                      IsInertiaEnabled="True"
-                                     Height="511">
-                        <Border Height="478"
+                                     Height="505">
+                        <Border Height="673"
                                 Margin="8,0"
                                 Width="812">
                             <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="471"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
                                 <Label BorderThickness="0"
                                     Background="#FF37373D"
                                     Foreground="White"
@@ -55,7 +59,7 @@
                                     ItemsSource="{Binding UserAccountList}"
                                     SelectedIndex="0"
                                     DisplayMemberPath="Uid"
-                                    Margin="657,35,28,413"/>
+                                    Margin="657,35,28,424"/>
                                 <Label BorderThickness="0"
                                     Foreground="White"
                                     Height="162"
@@ -64,7 +68,7 @@
                                     VerticalAlignment="Top"
                                     HorizontalAlignment="Left" Background="#FF37373D" />
                                 <Image x:Name="UHeaderImage"
-                                       Margin="20,144,721,262"
+                                       Margin="20,144,721,277"
                                        hc:BorderElement.CornerRadius="50"/>
                                 <TextBlock HorizontalAlignment="Left"
                                     Text="您的米哈游账户数据"
@@ -79,7 +83,7 @@
                                     Content="刷新"
                                     Margin="700,98,0,0"
                                     VerticalAlignment="Top"
-                                    Width="84"
+                                    Width="88"
                                     Height="30" />
                                 <Label BorderThickness="0"
                                     Background="#913F3F46"
@@ -89,8 +93,8 @@
                                     Margin="7,258,0,0"
                                     VerticalAlignment="Top"
                                     HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5"/>
-                                <hc:Watermark Mark=" ICora " FontSize="12" Margin="11,258,11,207" MarkBrush="#3300FFE7">
-                                    <Border BorderThickness="1" CornerRadius="4" BorderBrush="#FF3F3F46" />
+                                <hc:Watermark Mark=" ICora " FontSize="12" Margin="11,258,11,218" MarkBrush="#3300FFE7">
+                                    <Border BorderThickness="1" CornerRadius="4" BorderBrush="#FF3F3F46" Width="790" Height="13" />
                                 </hc:Watermark>
                                 <Button x:Name="CopyCookie"
                                     Click="CopyCookie_Click"
@@ -98,14 +102,14 @@
                                     HorizontalAlignment="Left"
                                     Margin="700,133,0,0"
                                     VerticalAlignment="Top"
-                                    Width="84"
+                                    Width="88"
                                     Height="29" />
                                 <TextBlock HorizontalAlignment="Left"
                                     Text="账户便签"
                                     Style="{StaticResource TextBlockSubTitle}"
                                     Margin="7,276,0,0"
                                     VerticalAlignment="Top"
-                                    Width="271"
+                                    Width="65"
                                     Height="22" />
                                 <TextBlock HorizontalAlignment="Left"
                                     Text="常规"
@@ -117,10 +121,9 @@
                                 <Label BorderThickness="0"
                                     Foreground="White"
                                     Height="162"
-                                    Width="794"
-                                    Margin="7,303,0,0"
-                                    VerticalAlignment="Top"
-                                    HorizontalAlignment="Left">
+                                    Width="797"
+                                    Margin="0,303,0,0"
+                                    VerticalAlignment="Top">
                                     <Label.Background>
                                         <ImageBrush ImageSource="https://upload-bbs.mihoyo.com/game_record/genshin/city_icon/UI_ChapterBackground_Mengde.png"/>
                                     </Label.Background>
@@ -166,7 +169,7 @@
                                     Height="16"
                                     Foreground="#FF9E9E9E" />
                                 <Image x:Name="HeadFrame"
-                                    Margin="15,137,711,256"
+                                    Margin="12,138,711,271"
                                     hc:BorderElement.CornerRadius="50"/>
                                 <Button x:Name="DelHoyolabAcc"
                                     Click="DelHoyolabAcc_Click"
@@ -174,17 +177,17 @@
                                     HorizontalAlignment="Left"
                                     Margin="700,167,0,0"
                                     VerticalAlignment="Top"
-                                    Width="84"
+                                    Width="88"
                                     Height="30" />
                                 <TextBlock
                                     HorizontalAlignment="Left"
                                     x:Name="Intr"
                                     Text="介绍"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="11,0,0,0"
+                                    Margin="11,227,0,0"
                                     Width="213"
                                     Height="24"
-                                    Foreground="#FF9E9E9E" />
+                                    Foreground="#FF9E9E9E" VerticalAlignment="Top" />
                                 <Button x:Name="InputCookie"
                                     Click="InputCookie_Click"
                                     Content="手动输入"
@@ -200,7 +203,7 @@
                                     hc:InfoElement.Placeholder="请输入你的Cookie"
                                     Style="{StaticResource TextBoxExtend}"
                                     hc:InfoElement.Necessary="True"
-                                    Margin="269,42,273,406"/>
+                                    Margin="269,42,273,397"/>
                                 <TextBlock
                                     Visibility="Hidden"
                                     HorizontalAlignment="Left"
@@ -326,6 +329,7 @@
                                     Margin="290,147,0,0"
                                     VerticalAlignment="Top"
                                     Width="48"
+                                    TextAlignment="Center"
                                     Height="16"
                                     Foreground="#FF9E9E9E" />
                                 <TextBlock
@@ -593,22 +597,22 @@
                                 <Image x:Name="MondeIcon"
                                     hc:Poptip.Placement="BottomLeft"
                                     Tag="您的蒙德探索度"
-                                    Margin="462,113,300,325"
+                                    Margin="462,102,300,337"
                                     hc:BorderElement.CornerRadius="50"/>
                                 <Image x:Name="LiyueIcon"
                                     hc:Poptip.Placement="BottomLeft"
                                     Tag="您的璃月探索度"
-                                    Margin="522,113,240,325"
+                                    Margin="522,102,240,337"
                                     hc:BorderElement.CornerRadius="50"/>
                                 <Image x:Name="DaoqiIcon"
-                                    Margin="582,113,180,325"
+                                    Margin="582,102,180,337"
                                     hc:Poptip.Placement="BottomLeft"
                                     Tag="您的稻妻探索度"
                                     hc:BorderElement.CornerRadius="50"/>
                                 <Image x:Name="XumiIcon"
                                     hc:Poptip.Placement="BottomLeft"
                                     Tag="您的须弥探索度"
-                                    Margin="644,113,118,325"
+                                    Margin="644,102,118,336"
                                     hc:BorderElement.CornerRadius="50"/>
                                 <TextBlock
                                     HorizontalAlignment="Left"
@@ -653,30 +657,29 @@
                                 <Image x:Name="Dragonspine"
                                     hc:Poptip.Placement="BottomLeft"
                                     Tag="您的龙脊雪山探索度"
-                                    Margin="462,174,300,254"
+                                    Margin="462,177,300,256"
                                     hc:BorderElement.CornerRadius="50"/>
                                 <Image x:Name="Chasm"
                                     hc:Poptip.Placement="BottomLeft"
                                     Tag="您的层岩巨渊探索度"
-                                    Margin="522,174,240,254"
+                                    Margin="522,177,240,257"
                                     hc:BorderElement.CornerRadius="50"/>
                                 <Image x:Name="Chasm_Underground"
-                                    Margin="582,174,180,254"
+                                    Margin="582,177,180,258"
                                     hc:Poptip.Placement="BottomLeft"
                                     Tag="您的层岩巨渊-地下矿区探索度"
                                     hc:BorderElement.CornerRadius="50"/>
                                 <Image x:Name="Enkanomiya"
                                     hc:Poptip.Placement="BottomLeft"
                                     Tag="您的渊下宫探索度"
-                                    Margin="644,174,118,254"
+                                    Margin="644,176,118,258"
                                     hc:BorderElement.CornerRadius="50"/>
                                 <TextBlock
                                     HorizontalAlignment="Left"
                                     x:Name="DragonspineE"
                                     Text="没有数据%"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="462,227,0,0"
-                                    VerticalAlignment="Top"
+                                    Margin="462,0,0,0"
                                     Width="48"
                                     Height="16"
                                     Foreground="#FFC5C3C3" TextAlignment="Center" />
@@ -685,8 +688,7 @@
                                     x:Name="ChasmE"
                                     Text="没有数据%"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="520,227,0,0"
-                                    VerticalAlignment="Top"
+                                    Margin="520,0,0,0"
                                     Width="50"
                                     Height="16"
                                     Foreground="#FFC5C3C3" TextAlignment="Center" />
@@ -695,8 +697,7 @@
                                     x:Name="Chasm_UndergroundE"
                                     Text="没有数据%"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="582,227,0,0"
-                                    VerticalAlignment="Top"
+                                    Margin="582,0,0,0"
                                     Width="48"
                                     Height="16"
                                     Foreground="#FFC5C3C3" TextAlignment="Center" />
@@ -705,8 +706,7 @@
                                     x:Name="EnkanomiyaE"
                                     Text="没有数据%"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="647,227,0,0"
-                                    VerticalAlignment="Top"
+                                    Margin="647,0,0,0"
                                     Width="47"
                                     Height="16"
                                     Foreground="#FFC5C3C3" TextAlignment="Center" />
@@ -714,14 +714,15 @@
                                 <Label BorderThickness="0"
                                     Foreground="White"
                                     Height="162"
-                                    Width="597"
-                                    Margin="7,303,0,0"
-                                    VerticalAlignment="Top"
-                                    HorizontalAlignment="Left" >
+                                    Width="796"
+                                    Margin="0,303,0,0"
+                                    VerticalAlignment="Top" >
                                     <Label.Background>
                                         <LinearGradientBrush EndPoint="1.3,0" StartPoint="0,0">
-                                            <GradientStop Color="#FF37373D" Offset="0.388"/>
-                                            <GradientStop Color="#00263238" Offset="1"/>
+                                            <GradientStop Color="#FF37373D" Offset="0.459"/>
+                                            <GradientStop Color="#0047555B" Offset="1"/>
+                                            <GradientStop Color="#4A90A1AB" Offset="0.702"/>
+                                            <GradientStop Color="#2A6D7F88" Offset="0.893"/>
                                         </LinearGradientBrush>
                                     </Label.Background>
                                 </Label>
@@ -749,34 +750,26 @@
                                     VerticalAlignment="Top"
                                     HorizontalAlignment="Left" Background="#FF42434C" />
                                 <Image x:Name="AvatarSideIconI"
-                                    Margin="34,365,753,88"
-                                    hc:BorderElement.CornerRadius="50" 
-                                    Width="25" 
-                                    Height="25"/>
+                                    Margin="34,366,753,97"
+                                    hc:BorderElement.CornerRadius="50"/>
                                 <Image x:Name="AvatarSideIconII"
-                                    Margin="87,365,700,88"
-                                    hc:BorderElement.CornerRadius="50" 
-                                    Width="25" 
-                                    Height="25"/>
+                                    Margin="87,373,700,91"
+                                    hc:BorderElement.CornerRadius="50"/>
                                 <Image x:Name="AvatarSideIconIII"
-                                    Margin="138,365,649,88"
-                                    hc:BorderElement.CornerRadius="50" 
-                                    Width="25" 
-                                    Height="25"/>
+                                    Margin="138,366,649,98"
+                                    hc:BorderElement.CornerRadius="50"/>
                                 <Image x:Name="AvatarSideIconIV"
-                                    Margin="191,365,596,88"
-                                    hc:BorderElement.CornerRadius="50" 
-                                    Width="25" 
-                                    Height="25"/>
+                                    Margin="192,373,595,91"
+                                    hc:BorderElement.CornerRadius="50"/>
                                 <TextBlock
                                     HorizontalAlignment="Left"
                                     x:Name="RemainedTimeI"
                                     Text="00:00:00"
                                     TextAlignment="Center"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="23,395,0,0"
-                                    FontSize="13"
-                                    Width="48"
+                                    Margin="21,395,0,0"
+                                    FontSize="10"
+                                    Width="51"
                                     Height="13"
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top" />
                                 <TextBlock
@@ -785,9 +778,9 @@
                                     Text="00:00:00"
                                     TextAlignment="Center"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="76,395,0,0"
-                                    FontSize="13"
-                                    Width="48"
+                                    Margin="74,402,0,0"
+                                    FontSize="10"
+                                    Width="51"
                                     Height="14"
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top" />
                                 <TextBlock
@@ -796,9 +789,9 @@
                                     Text="00:00:00"
                                     TextAlignment="Center"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="127,395,0,0"
-                                    FontSize="13"
-                                    Width="47"
+                                    Margin="126,395,0,0"
+                                    FontSize="10"
+                                    Width="51"
                                     Height="14"
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top" />
                                 <TextBlock
@@ -807,10 +800,10 @@
                                     Text="00:00:00"
                                     TextAlignment="Center"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="180,395,0,0"
-                                    FontSize="13"
-                                    Width="47"
-                                    Height="13"
+                                    Margin="178,404,0,0"
+                                    FontSize="10"
+                                    Width="52"
+                                    Height="12"
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top" />
                                 <TextBlock
                                     x:Name="ExpeditionsStatus"
@@ -829,22 +822,20 @@
                                     Margin="23,431,0,0"
                                     FontSize="11"
                                     Width="154"
-                                    Height="11"
+                                    Height="16"
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top" />
                                 <Image x:Name="AvatarSideIconV"
-                                    Margin="243,365,544,88"
-                                    hc:BorderElement.CornerRadius="50" 
-                                    Width="25" 
-                                    Height="25"/>
+                                    Margin="243,366,544,98"
+                                    hc:BorderElement.CornerRadius="50"/>
                                 <TextBlock
                                     HorizontalAlignment="Left"
                                     x:Name="RemainedTimeV"
                                     Text="00:00:00"
                                     TextAlignment="Center"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="232,395,0,0"
-                                    FontSize="13"
-                                    Width="47"
+                                    Margin="230,395,0,0"
+                                    FontSize="10"
+                                    Width="51"
                                     Height="13"
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top" />
 
@@ -854,37 +845,35 @@
                                     Width="260"
                                     Margin="304,354,0,0"
                                     VerticalAlignment="Top"
-                                    HorizontalAlignment="Left" Background="#FF42434C" />
+                                    HorizontalAlignment="Left" >
+                                    <Label.Background>
+                                        <LinearGradientBrush EndPoint="1.3,0" StartPoint="0,0">
+                                            <GradientStop Color="#FF42434C" Offset="0.587"/>
+                                            <GradientStop Color="#004B555F" Offset="1"/>
+                                            <GradientStop Color="#79464C55" Offset="0.74"/>
+                                        </LinearGradientBrush>
+                                    </Label.Background>
+                                </Label>
                                 <Image x:Name="ResinIcon"
                                     Source="pack://application:,,,/XFP.ICora;component/Resources/Resin.png"
-                                    Margin="318,366,468,87"
-                                    hc:BorderElement.CornerRadius="50" 
-                                    Width="25" 
-                                    Height="25"/>
+                                    Margin="318,367,468,93"
+                                    hc:BorderElement.CornerRadius="50"/>
                                 <Image x:Name="HomeCoinIcon"
                                     Source="pack://application:,,,/XFP.ICora;component/Resources/HomeCoin.png"
-                                    Margin="370,366,416,87"
-                                    hc:BorderElement.CornerRadius="50" 
-                                    Width="25" 
-                                    Height="25"/>
+                                    Margin="374,367,412,93"
+                                    hc:BorderElement.CornerRadius="50"/>
                                 <Image x:Name="DailyTaskIcon"
-                                    Margin="422,366,364,87"
+                                    Margin="422,367,364,93"
                                     Source="pack://application:,,,/XFP.ICora;component/Resources/DailyTask.png"
-                                    hc:BorderElement.CornerRadius="50" 
-                                    Width="25" 
-                                    Height="25"/>
+                                    hc:BorderElement.CornerRadius="50"/>
                                 <Image x:Name="ResinDiscountIcon"
-                                    Margin="474,366,312,87"
+                                    Margin="474,367,312,91"
                                     Source="pack://application:,,,/XFP.ICora;component/Resources/Domain.png"
-                                    hc:BorderElement.CornerRadius="50" 
-                                    Width="25" 
-                                    Height="25"/>
+                                    hc:BorderElement.CornerRadius="50"/>
                                 <Image x:Name="TransformerIcon"
-                                    Margin="524,366,263,87"
+                                    Margin="522,367,260,91"
                                     Source="pack://application:,,,/XFP.ICora;component/Resources/Transformer.png"
-                                    hc:BorderElement.CornerRadius="50" 
-                                    Width="25" 
-                                    Height="25"/>
+                                    hc:BorderElement.CornerRadius="50" RenderTransformOrigin="0.533,0.52"/>
                                 <TextBlock
                                     HorizontalAlignment="Left"
                                     x:Name="ResinCurrent"
@@ -892,7 +881,7 @@
                                     TextAlignment="Center"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
                                     Margin="310,395,0,0"
-                                    FontSize="13"
+                                    FontSize="10"
                                     Width="42"
                                     Height="15"
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top" />
@@ -902,9 +891,9 @@
                                     Text="没有数据"
                                     TextAlignment="Center"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="351,396,0,0"
-                                    FontSize="11"
-                                    Width="63"
+                                    Margin="353,396,0,0"
+                                    FontSize="10"
+                                    Width="68"
                                     Height="12"
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top" />
                                 <TextBlock
@@ -913,9 +902,9 @@
                                     Text="没有数据"
                                     TextAlignment="Center"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="423,394,0,0"
+                                    Margin="421,394,0,0"
                                     FontSize="15"
-                                    Width="23"
+                                    Width="30"
                                     Height="16"
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top" />
                                 <TextBlock
@@ -924,9 +913,9 @@
                                     Text="没有数据"
                                     TextAlignment="Center"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="476,394,0,0"
+                                    Margin="472,394,0,0"
                                     FontSize="15"
-                                    Width="21"
+                                    Width="30"
                                     Height="16"
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top" />
                                 <TextBlock
@@ -937,11 +926,11 @@
                                     Style="{StaticResource TextBlockDefaultSecLight}"
                                     Margin="510,395,0,0"
                                     FontSize="13"
-                                    Width="53"
-                                    Height="13"
+                                    Width="54"
+                                    Height="15"
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top" />
                                 <Image x:Name="PrimogemsIcon"
-                                    Margin="426,412,356,37"
+                                    Margin="418,410,358,45"
                                     hc:BorderElement.CornerRadius="50" 
                                     Source="pack://application:,,,/XFP.ICora;component/Resources/Primogems.png"/>
                                 <TextBlock
@@ -999,44 +988,142 @@
                                     Height="12"
                                     Foreground="#FF9E9E9E" VerticalAlignment="Top"/>
                                 <Image x:Name="MoraIcon"
-                                    Margin="314,411,466,38"
+                                    Margin="314,411,466,44"
                                     hc:BorderElement.CornerRadius="50" 
                                     Source="pack://application:,,,/XFP.ICora;component/Resources/Mora.png"/>
                                 <Image x:Name="PaimonEmo"
-                                    Margin="100,354,612,24"
+                                    Margin="100,355,612,16"
                                     Visibility="Hidden"
                                     Source="pack://application:,,,/XFP.ICora;component/Resources/PaimonEmotion.png"
-                                    hc:BorderElement.CornerRadius="50" Width="100" Height="100"/>
+                                    hc:BorderElement.CornerRadius="50"/>
                                 <!-- 账户选中 -->
                                 <TextBlock x:Name="UChooseHoyolabAccount"
                                     HorizontalAlignment="Left"
                                     Text="当前账户：未添加(选择)账户"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="648,465,0,0"
+                                    Margin="641,283,0,0"
                                     VerticalAlignment="Top"
                                     Width="163"
                                     Height="15"
                                     Foreground="#FF9E9E9E" />
-                                <Border VerticalAlignment="Center"
-                                        Visibility="Hidden"
-                                        IsHitTestVisible="True"
-                                        x:Name="HoyolabLoadingBorder"
-                                        Background="#7F128DFF"
-                                        CornerRadius="11" Height="478" Margin="0,0,11,0">
-                                    <Grid>
-                                        <hc:LoadingCircle
-                                            Style="{StaticResource LoadingCircleLight}"
-                                            Margin="11"/>
-                                        <TextBlock
-                                            Text="Loading Your Hoyolab Information"
-                                            Style="{StaticResource TextBlockLarge}"
-                                            Margin="0,186,0,0"
-                                            VerticalAlignment="Top"/>
-                                    </Grid>
-                                </Border>
+                                <Label BorderThickness="0"
+                                    Foreground="White"
+                                    Height="167"
+                                    Width="514"
+                                    Margin="290,479,0,0"
+                                    VerticalAlignment="Top"
+                                    HorizontalAlignment="Left" Grid.RowSpan="2">
+                                    <Label.Background>
+                                        <ImageBrush ImageSource="https://upload-bbs.mihoyo.com/game_record/genshin/home/UI_HomeworldModule_1_Pic.png"/>
+                                    </Label.Background>
+                                </Label>
+                                <Label BorderThickness="0"
+                                    Foreground="White"
+                                    Height="167"
+                                    Width="794"
+                                    Margin="0,479,0,0"
+                                    VerticalAlignment="Top" Grid.RowSpan="2" >
+                                    <Label.Background>
+                                        <LinearGradientBrush EndPoint="1.3,0" StartPoint="0,0">
+                                            <GradientStop Color="#FF37373D" Offset="0.124"/>
+                                            <GradientStop Color="#004B609A" Offset="1"/>
+                                            <GradientStop Color="#328587A5" Offset="0.678"/>
+                                            <GradientStop Color="#05BDAAA5" Offset="0.806"/>
+                                        </LinearGradientBrush>
+                                    </Label.Background>
+                                </Label>
+                                <TextBlock HorizontalAlignment="Left"
+                                    Text="尘歌壶"
+                                    Style="{StaticResource TextBlockSubTitle}"
+                                    Margin="23,0,0,0"
+                                    VerticalAlignment="Top"
+                                    Width="56"
+                                    Height="22" Grid.Row="1" />
+                                <Image x:Name="ComfortLevelIcon"
+                                    Margin="22,34,748,84"
+                                    hc:BorderElement.CornerRadius="50" RenderTransformOrigin="0.5,0.482" Grid.Row="1"/>
+                                <TextBlock
+                                    HorizontalAlignment="Left"
+                                    Text="您的尘歌壶 Level 级了"
+                                    Style="{StaticResource TextBlockDefaultSecLight}"
+                                    Margin="78,35,0,0"
+                                    Name="PothomeLevel"
+                                    VerticalAlignment="Top"
+                                    Width="200"
+                                    Height="15"
+                                    Foreground="#FF9E9E9E" Grid.Row="1" />
+                                <TextBlock
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource TextBlockDefaultSecLight}"
+                                    Margin="78,54,0,0"
+                                    x:Name="ComfortNumber"
+                                    VerticalAlignment="Top"
+                                    Width="200"
+                                    Height="16"
+                                    Text="最高仙力达 "
+                                    Foreground="#FF9E9E9E" Grid.Row="1" />
+                                <TextBlock
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource TextBlockDefaultSecLight}"
+                                    Margin="78,72,0,0"
+                                    x:Name="ItemNumber"
+                                    VerticalAlignment="Top"
+                                    Width="200"
+                                    Height="16"
+                                    Text="获得了 个摆件 "
+                                    Foreground="#FF9E9E9E" Grid.Row="1" />
+                                <TextBlock
+                                    HorizontalAlignment="Left"
+                                    Text="仙力等级名称"
+                                    FontSize="18"
+                                    Style="{StaticResource TextBlockDefaultSecLight}"
+                                    Margin="19,132,0,0"
+                                    x:Name="ComfortLevelName"
+                                    VerticalAlignment="Top"
+                                    Width="149"
+                                    Height="25"
+                                    Foreground="#FF9E9E9E" Grid.Row="1" />
+                                <TextBlock
+                                    HorizontalAlignment="Left"
+                                    Text="洞天名称"
+                                    Style="{StaticResource TextBlockDefaultSecLight}"
+                                    Margin="180,132,0,0"
+                                    x:Name="PothomeName"
+                                    VerticalAlignment="Top"
+                                    Width="113"
+                                    FontSize="18"
+                                    Height="25"
+                                    Foreground="#FF9E9E9E" Grid.Row="1" />
+                                <TextBlock
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource TextBlockDefaultSecLight}"
+                                    Margin="78,90,0,0"
+                                    x:Name="VisitNumber"
+                                    VerticalAlignment="Top"
+                                    Width="200"
+                                    Height="16"
+                                    Text="最高访客数达 人"
+                                    Foreground="#FF9E9E9E" Grid.Row="1" />
                             </Grid>
                         </Border>
                     </hc:ScrollViewer>
+                    <Border
+                            Visibility="Hidden"
+                            IsHitTestVisible="True"
+                            x:Name="HoyolabLoadingBorder"
+                            Background="#7F128DFF"
+                            CornerRadius="11" Height="559" Margin="0,-549.9,11,0" Grid.RowSpan="2">
+                        <Grid>
+                            <hc:LoadingCircle
+                                 Style="{StaticResource LoadingCircleLight}"
+                                 Margin="11"/>
+                            <TextBlock
+                                 Text="Loading Your Hoyolab Information"
+                                 Style="{StaticResource TextBlockLarge}"
+                                 Margin="0,186,0,0"
+                                 VerticalAlignment="Top"/>
+                        </Grid>
+                    </Border>
                 </hc:UniformSpacingPanel>
             </hc:ScrollViewer>
         </Grid>
