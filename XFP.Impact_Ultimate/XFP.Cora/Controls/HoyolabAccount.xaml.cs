@@ -33,15 +33,45 @@ namespace XFP.ICora.Controls
             UHeaderImage.Source = new BitmapImage(new Uri("https://th.bing.com/th/id/R.3a6f44192394c3b9e5b68ed21d2e1795?rik=ZEfzfyiGXR1yKw&pid=ImgRaw&r=0"));
             GetAreaImage();
 
-            if (UserCookie != string.Empty)
+            
+            HoyolabLoadingBorder.Visibility = Visibility.Visible;
+            DoubleAnimation daV = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromSeconds(0.6)));
+            HoyolabLoadingBorder.BeginAnimation(OpacityProperty, daV);
+
+            try
             {
-                InitializeUserInfo();
-                HoyolabLoadingBorder.Visibility = Visibility.Visible;
-                DoubleAnimation daV = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromSeconds(0.6)));
-                HoyolabLoadingBorder.BeginAnimation(OpacityProperty, daV);
+                new Thread(() =>
+                {
+                    Task RefreshTask = new(() =>
+                    {
+                        if (UserCookie != string.Empty)
+                        {
+                            InitializeUserInfo();
+                        }
+                        else
+                        {
+                            Dispatcher.BeginInvoke(new Action(delegate
+                            {
+                                Initialized();
+                            }));
+                        }
+                    });
+                    // 一分钟超时
+                    if (!RefreshTask.Wait(60000))
+                    {
+                        Growl.Clear();
+                        Growl.Warning("数据载入超时 (time out)\n请检查网络环境或关闭VPN等软件");
+                        Dispatcher.BeginInvoke(new Action(delegate
+                        {
+                            Initialized();
+                        }));
+                    }
+                }).Start();
             }
-            else
+            catch (Exception ex)
             {
+                Growl.Clear();
+                Growl.Warning("在刷新时出现错误: " + ex.Message);
                 Initialized();
             }
 
