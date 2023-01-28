@@ -56,7 +56,7 @@ V1.3.10
 - 访问我们的官网或者获取ICora的源码.
 - 官网: https://gashbyte.github.io/ICoraIndex .
 - 源码存储库: https://github.com/GashByte/ICora .
-***More***
+- ***More***
 - [转服包](https://github.com/GashByte/ICora/releases/download/%E8%BD%AC%E6%9C%8D%E5%8C%85/default.zip)
 - [ICora v1.3.10 REL](https://github.com/GashByte/ICora/releases/download/ICoraV1.3.10/ICoraV1.3.10Release.zip)
 ## 使用说明
