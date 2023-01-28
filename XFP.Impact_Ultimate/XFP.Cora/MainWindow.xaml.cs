@@ -255,15 +255,17 @@ namespace XFP.ICora
                         break;
                     case "友商论坛":
                         Growl.Clear();
-                        Growl.Success("正在访问 [入梦论坛] !");
+                        Growl.SuccessGlobal("即将访问入梦论坛~");
                         Process.Start("explorer.exe", "https://www.rmlt.xyz/");
                         break;
                     case "关于我们":
                         ControlPanel.Content = new AboutUs();
                         break;
                     case "祈愿记录":
-                        Growl.Clear();
-                        Growl.Warning("此按钮将在下一个版本开放~我们已经编写完成咯！");
+                        ControlPanel.Content = new WishExport();
+                        break;
+                    case "自定义便签":
+                        ControlPanel.Content = new CustomNote();
                         break;
                     case "米哈游账户":
                         ControlPanel.Content = new HoyolabAccount();
