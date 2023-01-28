@@ -10,6 +10,7 @@
              xmlns:local="clr-namespace:XFP.ICora.Controls.Basic"
              xmlns:hc="https://handyorg.github.io/handycontrol"
              mc:Ignorable="d"
+             FontFamily="{StaticResource GenshinImapctFont}"
              d:DesignHeight="624"
              d:DesignWidth="886">
     <hc:TransitioningContentControl>

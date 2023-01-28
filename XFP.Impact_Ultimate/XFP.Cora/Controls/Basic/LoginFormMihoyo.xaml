@@ -10,7 +10,7 @@
              xmlns:local="clr-namespace:XFP.ICora.Controls.Basic"
              xmlns:hc="https://handyorg.github.io/handycontrol"
              xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-             FontFamily="Arial Black"
+             FontFamily="{StaticResource GenshinImapctFont}"
              mc:Ignorable="d"
              d:DesignHeight="624"
              d:DesignWidth="886">
