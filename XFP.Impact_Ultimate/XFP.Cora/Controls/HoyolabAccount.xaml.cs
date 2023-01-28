@@ -289,7 +289,7 @@ namespace XFP.ICora.Controls
                                         TextBlock text = ExpeditionsTime[key];
                                         if (dailynote.Expeditions[FinishedCount].Status == "Ongoing")
                                         {
-                                            text.Text = dailynote.Expeditions[FinishedCount].FinishedTime.ToString();
+                                            text.Text = dailynote.Expeditions[FinishedCount].RemainedTime.ToString();
                                         }
                                         else
                                         {
