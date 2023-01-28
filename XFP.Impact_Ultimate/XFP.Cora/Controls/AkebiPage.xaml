@@ -11,7 +11,7 @@
              xmlns:local="clr-namespace:XFP.ICora.Controls"
              xmlns:hc="https://handyorg.github.io/handycontrol"
              mc:Ignorable="d"
-             FontFamily="Arial Black"
+             FontFamily="{StaticResource GenshinImapctFont}"
              d:DesignWidth="886"
              Height="624">
     <hc:TransitioningContentControl>
