@@ -1,4 +1,4 @@
-# **ICora** ![GitHub last commit](https://img.shields.io/github/last-commit/GashByte/ICora) ![Github Release](https://img.shields.io/github/downloads/GashByte/ICora/ICoraV1.3.10/total) 
+# **ICora** ![GitHub last commit](https://img.shields.io/github/last-commit/GashByte/ICora) ![Github Release](https://img.shields.io/github/downloads/GashByte/ICora/ICoraV1.3.11/total) 
 
 ![ICora](https://socialify.git.ci/GashByte/ICora/image?description=1&descriptionEditable=%E5%8E%9F%E7%A5%9E%E5%B7%A5%E5%85%B7%E7%AE%B1%20%7C%20XFP.ICora&forks=1&language=1&name=1&pattern=Overlapping%20Hexagons&stargazers=1&theme=Auto)
 
@@ -58,7 +58,7 @@ V1.3.10
 - 源码存储库: https://github.com/GashByte/ICora .
 - ***More***
 - [转服包](https://github.com/GashByte/ICora/releases/download/%E8%BD%AC%E6%9C%8D%E5%8C%85/default.zip)
-- [ICora v1.3.10 REL](https://github.com/GashByte/ICora/releases/download/ICoraV1.3.10/ICoraV1.3.10Release.zip)
+- [ICora v1.3.10 REL](https://github.com/GashByte/ICora/releases/download/ICora/ICoraRelease.zip)
 ## 使用说明
  
 - 解压REL压缩包，运行```XFP.ICora.exe```即可畅玩
