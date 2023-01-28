@@ -144,6 +144,8 @@ namespace XFP.ICora.Controls
                         else if (GenshinName == "GenshinImpact.exe")
                         {
                             UGameService.Text = "当前服务器：国际服 | Global";
+                            UChooseAccount.IsEnabled = false;
+                            ChooseAccount.IsEnabled = false;
                         }
                         else
                         {
@@ -1030,18 +1032,44 @@ namespace XFP.ICora.Controls
                         Process.Start("explorer.exe", Environment.CurrentDirectory + "\\GenshinService");
                         return;
                     }
-                    #region 写入配置
-                    DirectoryInfo info = new DirectoryInfo(UGenshinImpactPath.Text);
-                    string YuanShenDir = info.Parent.FullName;
-                    string configPath = YuanShenDir + "\\config.ini";
-                    if (UChooseService.SelectedItem.ToString() == "官方服 | 天空岛")
+                    if (File.Exists(GenshinServiceDir + "\\Initial_file_v3.4.0.zip") && File.Exists(GenshinServiceDir + "\\Replace_file_v3.4.0.zip"))
                     {
-                        if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
-                            , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
+                        #region 写入配置
+                        DirectoryInfo info = new DirectoryInfo(UGenshinImpactPath.Text);
+                        string YuanShenDir = info.Parent.FullName;
+                        string configPath = YuanShenDir + "\\config.ini";
+                        if (UChooseService.SelectedItem.ToString() == "官方服 | 天空岛")
                         {
-                            if (UGameService.Text == "当前服务器：国际服 | Global")
+                            if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
+                                , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
                             {
-                                if (File.Exists(Environment.CurrentDirectory + "\\GenshinService\\Initial_file_v3.4.0.zip"))
+                                if (UGameService.Text == "当前服务器：国际服 | Global")
+                                {
+                                    if (File.Exists(Environment.CurrentDirectory + "\\GenshinService\\Initial_file_v3.4.0.zip"))
+                                    {
+                                        GameConverter game = new();
+                                        game.Converter();
+                                    }
+                                    else
+                                    {
+                                        Growl.Clear();
+                                        Growl.Error("没有找到游戏转服资源包 请前往下载");
+                                        return;
+                                    }
+                                }
+                                UChooseAccount.IsEnabled = true;
+                                ChooseAccount.IsEnabled = true;
+                                UGenshinImpactPath.Text = YuanShenDir + "\\YuanShen.exe";
+                                ini.INIWrite("General", "channel", "1", configPath);
+                                ini.INIWrite("General", "cps", "mihoyo", configPath);
+                            }
+                        }
+                        if (UChooseService.SelectedItem.ToString() == "国际服 | Global")
+                        {
+                            if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
+                                , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
+                            {
+                                if (File.Exists(Environment.CurrentDirectory + "\\GenshinService\\Replace_file_v3.4.0.zip"))
                                 {
                                     GameConverter game = new();
                                     game.Converter();
@@ -1052,63 +1080,49 @@ namespace XFP.ICora.Controls
                                     Growl.Error("没有找到游戏转服资源包 请前往下载");
                                     return;
                                 }
+                                UChooseAccount.IsEnabled = false;
+                                ChooseAccount.IsEnabled = false;
+                                ini.INIWrite("General", "channel", "1", configPath);
+                                ini.INIWrite("General", "cps", "mihoyo", configPath);
+                                UGenshinImpactPath.Text = YuanShenDir + "\\GenshinImpact.exe";
                             }
-
-                            UGenshinImpactPath.Text = YuanShenDir + "\\YuanShen.exe";
-                            ini.INIWrite("General", "channel", "1", configPath);
-                            ini.INIWrite("General", "cps", "mihoyo", configPath);
                         }
-                    }
-                    if (UChooseService.SelectedItem.ToString() == "国际服 | Global")
-                    {
-                        if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
-                            , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
+                        if (UChooseService.SelectedItem.ToString() == "渠道服 | 世界树")
                         {
-                            if (File.Exists(Environment.CurrentDirectory + "\\GenshinService\\Replace_file_v3.4.0.zip"))
+                            if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
+                                , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
                             {
-                                GameConverter game = new();
-                                game.Converter();
-                            }
-                            else
-                            {
+                                ini.INIWrite("General", "channel", "14", configPath);
+                                ini.INIWrite("General", "cps", "bilibili", configPath);
+                                UGenshinImpactPath.Text = YuanShenDir + "\\YuanShen.exe";
+                                if (UGameService.Text == "当前服务器：国际服 | Global")
+                                {
+                                    if (File.Exists(Environment.CurrentDirectory + "\\GenshinService\\Initial_file_v3.4.0.zip"))
+                                    {
+                                        GameConverter game = new();
+                                        game.Converter();
+                                    }
+                                    else
+                                    {
+                                        Growl.Clear();
+                                        Growl.Error("没有找到游戏转服资源包 请前往下载");
+                                        return;
+                                    }
+                                }
+                                UChooseAccount.IsEnabled = true;
+                                ChooseAccount.IsEnabled = true;
                                 Growl.Clear();
-                                Growl.Error("没有找到游戏转服资源包 请前往下载");
-                                return;
+                                Growl.Success("转服成功 当前服务器：渠道服 | 世界树\n若出现无法进入 还是官方服的问题 请反馈");
                             }
-
-                            ini.INIWrite("General", "channel", "1", configPath);
-                            ini.INIWrite("General", "cps", "mihoyo", configPath);
-                            UGenshinImpactPath.Text = YuanShenDir + "\\GenshinImpact.exe";
                         }
+                        UGameService.Text = "当前服务器：" + UChooseService.SelectedItem;
+                        #endregion
                     }
-                    if (UChooseService.SelectedItem.ToString() == "渠道服 | 世界树")
+                    else
                     {
-                        if (MessageBox.Show("是否这么做？这样也许会导致ICora进入长时间的卡顿\n若出现无法打开原神 请去启动器校验文件完整性", ""
-                            , MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
-                        {
-                            ini.INIWrite("General", "channel", "14", configPath);
-                            ini.INIWrite("General", "cps", "bilibili", configPath);
-                            UGenshinImpactPath.Text = YuanShenDir + "\\YuanShen.exe";
-                            if (UGameService.Text == "当前服务器：国际服 | Global")
-                            {
-                                if (File.Exists(Environment.CurrentDirectory + "\\GenshinService\\Initial_file_v3.4.0.zip"))
-                                {
-                                    GameConverter game = new();
-                                    game.Converter();
-                                }
-                                else
-                                {
-                                    Growl.Clear();
-                                    Growl.Error("没有找到游戏转服资源包 请前往下载");
-                                    return;
-                                }
-                            }
-                            Growl.Clear();
-                            Growl.Success("转服成功 当前服务器：渠道服 | 世界树\n若出现无法进入 还是官方服的问题 请反馈");
-                        }
+                        Growl.Clear();
+                        Growl.Error("缺少关键文件 :\nInitial_file_v3.4.0.zip\nRelpace_file_v3.4.0.zip");
                     }
-                    UGameService.Text = "当前服务器：" + UChooseService.SelectedItem;
-                    #endregion
                 }
                 catch (DirectoryNotFoundException)
                 {
@@ -1284,11 +1298,13 @@ namespace XFP.ICora.Controls
             {
                 CheckCL.Content = "启用";
                 key.sk("Check CLibrary", "False");
+                _UCheckCL = true;
             }
             else
             {
                 CheckCL.Content = "已启用";
                 key.sk("Check CLibrary", "True");
+                _UCheckCL = false;
             }
         }
 
