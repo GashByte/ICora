@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="XFP.ICora.Controls.CustomNote"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:XFP.ICora.Controls"
+             mc:Ignorable="d" 
+             FontFamily="{StaticResource GenshinImapctFont}"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             d:DesignHeight="624"
+             d:DesignWidth="886">
+    <hc:TransitioningContentControl>
+        <Grid>
+            <hc:ScrollViewer IsInertiaEnabled="True">
+                <hc:UniformSpacingPanel Margin="32"
+                                        Spacing="5"
+                                        Orientation="Vertical">
+                    <TextBlock HorizontalAlignment="Left"
+                               Text="自定义便签"
+                               Style="{StaticResource TextBlockLargeBold}" />
+                    <hc:ScrollViewer Name="ScrollViewerDemo"
+                                     IsInertiaEnabled="True"
+                                     Height="511">
+                        <Border Height="478"
+                                Margin="8,0"
+                                Width="812">
+                            <Grid>
+                            </Grid>
+                        </Border>
+                    </hc:ScrollViewer>
+                </hc:UniformSpacingPanel>
+            </hc:ScrollViewer>
+        </Grid>
+    </hc:TransitioningContentControl>
+</UserControl>
