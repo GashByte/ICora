@@ -276,14 +276,14 @@ namespace XFP.ICora.Controls
                             {
                                 foreach (string key in ImageValue.Keys)
                                 {
-                                    if (dailynote.Expeditions[FinishedCount - 1].AvatarSideIcon != null)
+                                    if (dailynote.Expeditions[FinishedCount].AvatarSideIcon != null)
                                     { 
                                         Image avatarsideicon = ImageValue[key];
-                                        avatarsideicon.Source = new BitmapImage(new Uri(dailynote.Expeditions[FinishedCount - 1].AvatarSideIcon));
+                                        avatarsideicon.Source = new BitmapImage(new Uri(dailynote.Expeditions[FinishedCount].AvatarSideIcon));
                                         TextBlock text = ExpeditionsTime[key];
-                                        if (dailynote.Expeditions[FinishedCount - 1].Status == "Ongoing")
+                                        if (dailynote.Expeditions[FinishedCount].Status == "Ongoing")
                                         {
-                                            text.Text = dailynote.Expeditions[FinishedCount - 1].FinishedTime.ToString();
+                                            text.Text = dailynote.Expeditions[FinishedCount].FinishedTime.ToString();
                                         }
                                         else
                                         {
