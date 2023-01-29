@@ -310,9 +310,9 @@ namespace XFP.ICora.Controls
                                     FinishedCount++;
                                 }
 
-                                if (FinishedCount != dailynote.FinishedExpeditionNumber)
+                                if ( dailynote.FinishedExpeditionNumber != dailynote.CurrentExpeditionNumber )
                                 {
-                                    ExpeditionsStatus.Text = $"派遣完成度({FinishedCount}/{dailynote.CurrentExpeditionNumber})";
+                                    ExpeditionsStatus.Text = $"派遣完成度({dailynote.FinishedExpeditionNumber}/{dailynote.CurrentExpeditionNumber})";
                                 }
                                 else
                                 {
