@@ -60,7 +60,7 @@ V1.3.10
 - [转服包](https://github.com/GashByte/ICora/releases/download/%E8%BD%AC%E6%9C%8D%E5%8C%85/default.zip)
 - [ICora v1.3.11 REL](https://github.com/GashByte/ICora/releases/download/ICora/ICoraRelease.zip)
 ## 使用说明
- 
+- 需要提前安装```.Net 7.0 SDK```
 - 解压REL压缩包，运行```XFP.ICora.exe```即可畅玩
 
 
