@@ -93,16 +93,18 @@ namespace XFP.ICora.Controls
             {
                 var user = await new HoyolabClient().GetHoyolabUserInfoAsync(UserCookie);
                 var role = await new HoyolabClient().GetGenshinRoleInfoListAsync(UserCookie);
+                LoadingProcess.Value += 1;
                 GenshinRoleInfo? genshinRoleInfo = role.FirstOrDefault();
-
+                LoadingProcess.Value += 1;
                 try
                 {
+                    LoadingProcess.Value += 2;
                     var SginInfo = await new HoyolabClient().GetSignInInfoAsync(genshinRoleInfo);
                     if (SginInfo.IsSub)
                     {
                         Growl.Clear();
                         Growl.Info("旅行者今天还没有签到哦~ 已经帮你签到了哦~");
-                        await new HoyolabClient().SignInAsync(genshinRoleInfo);
+                        await new HoyolabClient().SignInAsync(genshinRoleInfo, true);
                     }
                 }
                 catch (Exception ex)
@@ -111,11 +113,12 @@ namespace XFP.ICora.Controls
                 }
                 finally
                 {
-
                     UHeaderImage.Source = new BitmapImage(new Uri(user.AvatarUrl));
                     UserHoyolabName.Text = $"你好! {user.Nickname}";
+                    LoadingProcess.Value += 4;
                     string RoleMaskId = genshinRoleInfo.Uid.ToString().Substring(0, 3)
                         + "***" + genshinRoleInfo.Uid.ToString().Substring(genshinRoleInfo.Uid.ToString().Length - 3);
+                    LoadingProcess.Value += 5;
                     UserHoyolabUid.Text = $"Uid {RoleMaskId}";
                     UserGenshinServer.Text = $"您在 {genshinRoleInfo.RegionName} ";
                     UserGenshinLevel.Text = $"您 {genshinRoleInfo.Level} 级了";
@@ -126,11 +129,11 @@ namespace XFP.ICora.Controls
                     Intr.Text = $"简介：{user.Introduce}";
                     UHoyolabAccount.Text = $"嗨！别来无恙啊！{user.Nickname} 最近生活是否如意？";
                     InputCookie.IsEnabled = false;
-
+                    LoadingProcess.Value += 9;
                     Properties.Settings.Default.UserCookie = genshinRoleInfo.Cookie;
                     Properties.Settings.Default.Save();
                     Properties.Settings.Default.Upgrade();
-
+                    LoadingProcess.Value += 2;
                     HoyolabLists.Clear();
                     HoyolabLists.Add(new HoyolabUid()
                     {
@@ -138,6 +141,7 @@ namespace XFP.ICora.Controls
                     });
 
                     GetGameRecordByInitialze(genshinRoleInfo, RoleMaskId);
+                    LoadingProcess.Value += 2;
                 }
             }
             catch (Exception ex)
@@ -170,6 +174,7 @@ namespace XFP.ICora.Controls
             try
             {
                 var roleGameRecord = await new HoyolabClient().GetGameRecordAsync(info);
+                LoadingProcess.Value += 8;
                 Days.Text = $"{roleGameRecord.PlayerStat.ActiveDayNumber}天";
                 Achievements.Text = $"{roleGameRecord.PlayerStat.AchievementNumber}个";
                 RolesCount.Text = $"{roleGameRecord.PlayerStat.AvatarNumber}个";
@@ -179,13 +184,14 @@ namespace XFP.ICora.Controls
                 EOcuil.Text = $"{roleGameRecord.PlayerStat.ElectroculusNumber}";
                 DOcuil.Text = $"{roleGameRecord.PlayerStat.DendroculusNumber}";
                 Domain.Text = $"{roleGameRecord.PlayerStat.DomainNumber}个";
+                LoadingProcess.Value += 7;
                 SpiralAbyss.Text = $"{roleGameRecord.PlayerStat.SpiralAbyss}";
                 Luxurious.Text = $"{roleGameRecord.PlayerStat.LuxuriousChestNumber}";
                 Precious.Text = $"{roleGameRecord.PlayerStat.PreciousChestNumber}";
                 Exquisite.Text = $"{roleGameRecord.PlayerStat.ExquisiteChestNumber}";
                 Common.Text = $"{roleGameRecord.PlayerStat.CommonChestNumber}";
                 Remarkable.Text = $"{roleGameRecord.PlayerStat.MagicChestNumber}";
-
+                LoadingProcess.Value += 8;
                 MondE.Text = $"{roleGameRecord.WorldExplorations[7].ExplorationPercentage.ToString().
                     Insert(roleGameRecord.WorldExplorations[7].ExplorationPercentage.ToString().Length - 1, ".")}%";
                 LiyueE.Text = $"{roleGameRecord.WorldExplorations[6].ExplorationPercentage.ToString().
@@ -202,8 +208,8 @@ namespace XFP.ICora.Controls
                     Insert(roleGameRecord.WorldExplorations[1].ExplorationPercentage.ToString().Length - 1, ".")}%";
                 XumiE.Text = $"{roleGameRecord.WorldExplorations[0].ExplorationPercentage.ToString().
                     Insert(roleGameRecord.WorldExplorations[0].ExplorationPercentage.ToString().Length - 1, ".")}%";
-
-                GetDailyNotesAsync(uid);
+                LoadingProcess.Value += 12;
+                GetDailyNotesAsync (uid);
             }
             catch (Exception ex)
             {
@@ -228,6 +234,7 @@ namespace XFP.ICora.Controls
                 Enkanomiya.Source = new BitmapImage(new Uri("https://upload-bbs.mihoyo.com/game_record/genshin/city_icon/UI_ChapterIcon_Enkanomiya.png"));
                 Chasm.Source = new BitmapImage(new Uri("https://upload-bbs.mihoyo.com/game_record/genshin/city_icon/UI_ChapterIcon_ChasmsMaw.png"));
                 Chasm_Underground.Source = new BitmapImage(new Uri("https://upload-bbs.mihoyo.com/game_record/genshin/city_icon/UI_ChapterIcon_ChasmsMaw.png"));
+                LoadingProcess.Value += 2;
             }
             catch (Exception ex)
             {
@@ -254,7 +261,7 @@ namespace XFP.ICora.Controls
                     {
                         var dailynote = await new HoyolabClient().GetDailyNoteAsync(role);
                         var travelnote = await new HoyolabClient().GetTravelNotesSummaryAsync(role);
-                        
+                        LoadingProcess.Value += 2;
                         try
                         {
                             string TipText = "";
@@ -274,6 +281,7 @@ namespace XFP.ICora.Controls
                                 { "IV", RemainedTimeIV },
                                 { "V", RemainedTimeV }
                             };
+                            LoadingProcess.Value += 5;
 
                             int FinishedCount = 0;
                             int Expeditions = dailynote.CurrentExpeditionNumber;
@@ -302,7 +310,7 @@ namespace XFP.ICora.Controls
                                     FinishedCount++;
                                 }
 
-                                if (FinishedCount != dailynote.CurrentExpeditionNumber)
+                                if (FinishedCount != dailynote.FinishedExpeditionNumber)
                                 {
                                     ExpeditionsStatus.Text = $"派遣完成度({FinishedCount}/{dailynote.CurrentExpeditionNumber})";
                                 }
@@ -323,6 +331,7 @@ namespace XFP.ICora.Controls
                             {
                                 TipText += "洞天宝钱已满\n";
                             }
+                            LoadingProcess.Value += 5;
                             DailyTaskCurrent.Text = $"{dailynote.FinishedTaskNumber}/4";
                             if (dailynote.FinishedTaskNumber == 0)
                             {
@@ -342,12 +351,14 @@ namespace XFP.ICora.Controls
                                 TransformerCurrent.Text = $"已冷却";
                                 TipText += "参量质变仪已冷却\n";
                             }
+                            LoadingProcess.Value += 5;
                             Growl.Clear();
                             Growl.Success(TipText + "快上线原神来玩玩吧！");
                             CurrentPrimogems.Text = travelnote.DayData.LastPrimogems.ToString();
                             CurrentMora.Text = travelnote.DayData.LastMora.ToString();
+                            LoadingProcess.Value += 5;
 
-                            GetPothomeInfo(role);
+                            GetPothomeInfo (role);
 
                             Initialized(uid);
                         }
@@ -386,13 +397,16 @@ namespace XFP.ICora.Controls
                 PothomeLevel.Text = $"您的尘歌壶 {gamerecord.PotHomes.FirstOrDefault().Level} 级了";
                 if (gamerecord.PotHomes.FirstOrDefault().Level != 0)
                 {
+                    LoadingProcess.Value += 5;
                     ComfortLevelIcon.Source = new BitmapImage(new Uri($"https://upload-bbs.mihoyo.com/game_record/genshin/home/UI_Homeworld_Comfort_{gamerecord.PotHomes.FirstOrDefault().Level}.png"));
                 }
                 ComfortNumber.Text = $"最高仙力达 {gamerecord.PotHomes.FirstOrDefault().ComfortNumber}";
                 ItemNumber.Text = $"获得了 {gamerecord.PotHomes.FirstOrDefault().ItemNumber} 个摆件";
+                LoadingProcess.Value += 5;
                 ComfortLevelName.Text = $"{gamerecord.PotHomes.FirstOrDefault().ComfortLevelName}";
                 PothomeName.Text = $"{gamerecord.PotHomes.FirstOrDefault().Name}";
                 VisitNumber.Text = $"最高访客数达 {gamerecord.PotHomes.FirstOrDefault().VisitNumber} 人";
+                LoadingProcess.Value += 5;
             }
             catch (Exception ex)
             {

@@ -203,7 +203,7 @@
                                     hc:InfoElement.Placeholder="请输入你的Cookie"
                                     Style="{StaticResource TextBoxExtend}"
                                     hc:InfoElement.Necessary="True"
-                                    Margin="269,42,273,397"/>
+                                         Margin="269,41,273,418" />
                                 <TextBlock
                                     Visibility="Hidden"
                                     HorizontalAlignment="Left"
@@ -679,37 +679,37 @@
                                     x:Name="DragonspineE"
                                     Text="没有数据%"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="462,0,0,0"
+                                    Margin="462,235,0,0"
                                     Width="48"
                                     Height="16"
-                                    Foreground="#FFC5C3C3" TextAlignment="Center" />
+                                    Foreground="#FFC5C3C3" TextAlignment="Center" VerticalAlignment="Top" />
                                 <TextBlock
                                     HorizontalAlignment="Left"
                                     x:Name="ChasmE"
                                     Text="没有数据%"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="520,0,0,0"
+                                    Margin="520,235,0,0"
                                     Width="50"
                                     Height="16"
-                                    Foreground="#FFC5C3C3" TextAlignment="Center" />
+                                    Foreground="#FFC5C3C3" TextAlignment="Center" VerticalAlignment="Top" />
                                 <TextBlock
                                     HorizontalAlignment="Left"
                                     x:Name="Chasm_UndergroundE"
                                     Text="没有数据%"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="582,0,0,0"
+                                    Margin="582,235,0,0"
                                     Width="48"
                                     Height="16"
-                                    Foreground="#FFC5C3C3" TextAlignment="Center" />
+                                    Foreground="#FFC5C3C3" TextAlignment="Center" VerticalAlignment="Top" />
                                 <TextBlock
                                     HorizontalAlignment="Left"
                                     x:Name="EnkanomiyaE"
                                     Text="没有数据%"
                                     Style="{StaticResource TextBlockDefaultSecLight}"
-                                    Margin="647,0,0,0"
+                                    Margin="647,235,0,0"
                                     Width="47"
                                     Height="16"
-                                    Foreground="#FFC5C3C3" TextAlignment="Center" />
+                                    Foreground="#FFC5C3C3" TextAlignment="Center" VerticalAlignment="Top" />
                                 <!-- 实时便签 -->
                                 <Label BorderThickness="0"
                                     Foreground="White"
@@ -1114,9 +1114,21 @@
                             Background="#7F128DFF"
                             CornerRadius="11" Height="559" Margin="0,-549.9,11,0" Grid.RowSpan="2">
                         <Grid>
-                            <hc:LoadingCircle
-                                 Style="{StaticResource LoadingCircleLight}"
-                                 Margin="11"/>
+                            <hc:WaveProgressBar Name="LoadingProcess"
+                                                FontSize="20"
+                                                Margin="356,232,355,187"
+                                                WaveThickness="4"
+                                                WaveStroke="#FFFF0080">
+                                <hc:WaveProgressBar.WaveFill>
+                                    <LinearGradientBrush EndPoint="0,1"
+                                                         StartPoint="0,0">
+                                        <GradientStop Color="#66FF0080"
+                                                      Offset="0" />
+                                        <GradientStop Color="#FFFF0080"
+                                                      Offset="1" />
+                                    </LinearGradientBrush>
+                                </hc:WaveProgressBar.WaveFill>
+                            </hc:WaveProgressBar>
                             <TextBlock
                                  Text="Loading Your Hoyolab Information"
                                  Style="{StaticResource TextBlockLarge}"
