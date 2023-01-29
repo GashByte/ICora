@@ -2,6 +2,12 @@
 
 ![ICora](https://socialify.git.ci/GashByte/ICora/image?description=1&descriptionEditable=%E5%8E%9F%E7%A5%9E%E5%B7%A5%E5%85%B7%E7%AE%B1%20%7C%20XFP.ICora&forks=1&language=1&name=1&pattern=Overlapping%20Hexagons&stargazers=1&theme=Auto)
 
+## XFP Studio招人
+- Hi Everyone 我们目前急缺懂得 ``C#``、``WinUI3``、``数据库`` 的开发者们 如果你们有兴趣 想要加入 `XFPStudio` 可以前往我的官网 下滑 点击 **Join XFPStudio** 然后联系我的QQ 我会将你拉入我们的交流小组 `XFPStudio` 是一个由我成立的小组织 里面只有两三个人 不过我希望能有越来越多的开发者们能够支持我们 加入我们 和我们肩并肩完成属于我们的梦想
+- 访问我的官网：[官网](https://gashbyte.github.io/ICoraIndex/)
+- 您也可加入我们的 [Discord群聊](https://discord.gg/GcJCsvTMau) 获得Contributor身份组 与我们一起交流贡献！👀
+- ❤ 希望越来越多的人能够支持ICora的诞生 能够与ICora现在的贡献者们肩并肩的一起工作！ ❤
+
 ## 目录
 
 - [关于我们](#关于我们)
