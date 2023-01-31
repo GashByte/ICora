@@ -64,6 +64,7 @@ V1.3.10
 - 源码存储库: https://github.com/GashByte/ICora .
 - ***More***
 - [转服包](https://github.com/GashByte/ICora/releases/download/%E8%BD%AC%E6%9C%8D%E5%8C%85/default.zip)
+- [转服包国内分流](https://www.123pan.com/s/UE0KVv-GIcJH)
 - [ICora v1.3.11 REL](https://github.com/GashByte/ICora/releases/download/ICora/ICoraRelease.zip)
 ## 使用说明
 - 需要提前安装[.Net 7.0 SDK](https://download.visualstudio.microsoft.com/download/pr/6ba69569-ee5e-460e-afd8-79ae3cd4617b/16a385a4fab2c5806f50f49f5581b4fd/dotnet-sdk-7.0.102-win-x64.exe)
