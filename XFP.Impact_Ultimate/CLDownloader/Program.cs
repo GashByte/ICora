@@ -8,7 +8,7 @@ namespace XFP.Impact_Ultimate.CLDownloader
     public class CLDownloader
     {
         private static string Impact_UltimatePath = Environment.CurrentDirectory + "\\ICora";
-        private static string AkebiPath = Environment.CurrentDirectory + "\\ICora\\CLibrary.dll";
+        private static string BkebiPath = Environment.CurrentDirectory + "\\ICora\\libstdimpact.dll";
 
         static void Main()
         {
@@ -21,16 +21,16 @@ namespace XFP.Impact_Ultimate.CLDownloader
         {
             Console.WriteLine("-------------------------Checker-------------------------");
             Console.WriteLine("正在检查数据");
-            if (File.Exists(AkebiPath))
+            if (File.Exists(BkebiPath))
             {
-                Console.WriteLine("检查到了CLibrary的存在 正在校验文件大小");
-                FileInfo fileInfo = new FileInfo(AkebiPath);
+                Console.WriteLine("检查到了libstdimpact.dll的存在 正在校验文件大小");
+                FileInfo fileInfo = new FileInfo(BkebiPath);
                 long localsize = fileInfo.Length;
                 HttpWebRequest request = WebRequest.CreateHttp(
-                            "https://gitee.com/MasterGashByte/download/releases/download/CLibrary/CLibrary.dll");
+                            "");
                 HttpWebResponse? response = request.GetResponse() as HttpWebResponse;
-                Console.WriteLine("您的CL大小: " + localsize);
-                Console.WriteLine("服务器的CL大小: " + response.ContentLength);
+                Console.WriteLine("您的lib大小: " + localsize);
+                Console.WriteLine("服务器的lib大小: " + response.ContentLength);
                 SizeChecker(localsize, response.ContentLength);
             }
             else
@@ -45,11 +45,11 @@ namespace XFP.Impact_Ultimate.CLDownloader
             Console.WriteLine("-------------------------Downloader-------------------------");
             Console.WriteLine("正在请求文件中");
             HttpWebRequest request = WebRequest.CreateHttp(
-                            "https://gitee.com/MasterGashByte/download/releases/download/CLibrary/CLibrary.dll");
+                            "");
             HttpWebResponse? response = request.GetResponse() as HttpWebResponse;
             Stream responseStream = response.GetResponseStream();
             //保存用户头像
-            Stream stream = new FileStream(AkebiPath, FileMode.Create);
+            Stream stream = new FileStream(BkebiPath, FileMode.Create);
             byte[] bArr = new byte[1024];
             int size = responseStream.Read(bArr, 0, bArr.Length);
             Stopwatch sw = new Stopwatch();
@@ -66,7 +66,7 @@ namespace XFP.Impact_Ultimate.CLDownloader
             stream.Close();
             responseStream.Close();
             sw.Stop();
-            FileInfo fileInfo = new FileInfo(AkebiPath);
+            FileInfo fileInfo = new FileInfo(BkebiPath);
             long localsize = fileInfo.Length;
 
             Console.WriteLine("下载成功！ 耗时: " + sw.ElapsedMilliseconds / 1000.0000 + " 秒");
@@ -80,13 +80,13 @@ namespace XFP.Impact_Ultimate.CLDownloader
         {
             if (LocalSize != ServerSize)
             {
-                Console.WriteLine("这是一个不符合要求的CL正在重新下载");
-                File.Delete(AkebiPath);
+                Console.WriteLine("这是一个不符合要求的lib正在重新下载");
+                File.Delete(BkebiPath);
                 Downloader();
             }
             else
             {
-                Console.WriteLine("这是一个合格的CL请放心使用");
+                Console.WriteLine("这是一个合格的lib请放心使用");
                 Environment.Exit(0);
             }
         }
